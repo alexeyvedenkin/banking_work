@@ -5,12 +5,12 @@ from typing import Any
 
 import pandas as pd
 
-logger_utils = logging.getLogger("utils")
-logger_utils.setLevel(logging.DEBUG)
+utils_logger = logging.getLogger('utils')
+utils_logger.setLevel(logging.DEBUG)
 file_handler = logging.FileHandler('logs/utils.log', "w", encoding="utf-8")
 file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s: %(message)s")
 file_handler.setFormatter(file_formatter)
-logger_utils.addHandler(file_handler)
+utils_logger.addHandler(file_handler)
 
 #
 #
@@ -36,16 +36,16 @@ logger_utils.addHandler(file_handler)
 
 def read_excel(filename: str) -> Any:
     """
-    Function to read Excel file and return its content as a list of dictionaries
+    Считывает файл в формате xlsx и возвращает данные в виде списка словарей
     """
     if not os.path.exists(filename):
-        logger_utils.error("File not found")
+        utils_logger.error("File not found")
         return []  # Return an empty list in case of error
-    logger_utils.info("Начало загрузки Excel файла")
+    utils_logger.info("Начало загрузки Excel файла")
     reading_excel = pd.read_excel(filename)
     # Convert DataFrame to list of dictionaries
     transactions_list = reading_excel.to_dict("records")
-    logger_utils.info("Окончание загрузки Excel файла")
+    utils_logger.info("Окончание загрузки Excel файла")
 
     return transactions_list
 
