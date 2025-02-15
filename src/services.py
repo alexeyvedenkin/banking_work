@@ -1,6 +1,9 @@
 import datetime
 import json
 import logging
+import re
+
+import pandas as pd
 
 from typing import Any, Dict, List
 
@@ -25,13 +28,22 @@ def easy_search(data_dict):
     pass
 
 
-def find_phone(data_dict):
+def find_phone(df):
     """Возвращает JSON-файл со всеми транзакциями, содержащими в описании мобильные номера
     """
     pass
 
 
-def find_people_pass(data_dict):
+def find_people_pass(df):
     """Возвращает JSON-файл со всеми транзакциями, которые относятся к переводам физлицам
     """
-    pass
+    filtered_data = df[df['Описание'].str.contains('Перевод')]
+    result_list = filtered_data.sort_values(by='Дата операции', ascending=True)
+    result_list.to_json('people_pass.json', indent=4, orient='records', force_ascii=False)
+    return result_list
+
+
+if __name__ == '__main__':
+    df = pd.read_excel('operations.xlsx')
+    result = find_people_pass(df)
+    print(find_people_pass(df), sep='\n')
