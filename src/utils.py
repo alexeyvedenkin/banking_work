@@ -3,7 +3,7 @@ import logging
 import os
 from typing import Any
 
-import pandas as pd
+# import pandas as pd
 
 utils_logger = logging.getLogger('utils')
 utils_logger.setLevel(logging.DEBUG)
@@ -42,7 +42,7 @@ def read_excel(filename: str) -> Any:
         utils_logger.error("File not found")
         return []  # Return an empty list in case of error
     utils_logger.info("Начало загрузки Excel файла")
-    reading_excel = pd.read_excel(filename)
+    reading_excel = read_excel(filename)
     # Convert DataFrame to list of dictionaries
     transactions_list = reading_excel.to_dict("records")
     utils_logger.info("Окончание загрузки Excel файла")
@@ -50,7 +50,31 @@ def read_excel(filename: str) -> Any:
     return transactions_list
 
 
+def filter_by_date(my_lst: list[dict], start: str, stop: str) -> list[dict]:
+    """Возвращает список словарей, отфильтрованный по дате
+    """
+    pass
+
+
+def days_translation() -> dict:
+    """Возвращает словарь для перевода дней недели из English в Russian
+    """
+    days_on_russian = {
+        'Monday': 'Понедельник',
+        'Tuesday': 'Вторник',
+        'Wednesday': 'Среда',
+        'Thursday': 'Четверг',
+        'Friday': 'Пятница',
+        'Saturday': 'Суббота',
+        'Sunday': 'Воскресенье'
+    }
+    return days_on_russian
+
+
 if __name__ == '__main__':
     # print(*read_csv("transactions.csv")[:5], sep='\n')
     # print()
-    print(*read_excel("operations.xlsx")[:5], sep='\n')
+    print(read_excel('operations.xlsx'), sep='\n')
+    # print(pd.read_excel("operations.xlsx")[:5], sep='\n')
+    # df = pd.read_excel('operations.xlsx', usecols=[0, 4, 9, 11])
+    # print(df[:20])
