@@ -34,7 +34,8 @@ def spending_by_weekday(transactions: pd.DataFrame,
     # Определяем период для обработки исходя из заданной даты
     work_date = datetime.datetime.strptime(date, "%d.%m.%Y %H:%M:%S")
     start_of_period = work_date - relativedelta(months=3) + timedelta(seconds=1)
-    print(start_of_period, work_date)
+    print(f'Период выборки: с {start_of_period} до {work_date}')
+    print()
 
     # Добавляем в датафрейм столбец с объектами datetime дла получения соответствующих дней недели
     transactions['date_from_datetime'] = pd.to_datetime(transactions['Дата операции'], dayfirst=True)
@@ -43,7 +44,7 @@ def spending_by_weekday(transactions: pd.DataFrame,
     transactions['День недели'] = transactions['date_from_datetime'].dt.day_name().map(days_translation())
 
     # Устанавливаем индекс в соответствии с днями недели
-    transactions['День недели'] = pd.Categorical(df['День недели'], categories=[
+    transactions['День недели'] = pd.Categorical(transactions['День недели'], categories=[
         'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота',
         'Воскресенье'
     ], ordered=True)
@@ -59,14 +60,10 @@ def spending_by_weekday(transactions: pd.DataFrame,
     # print(result)
 
     # Группируем по дням недели
-    pays_by_weekday = result.groupby('День недели')
-    # print(pays_by_weekday)
+    pays_by_weekday = result.groupby('День недели', observed=False)
 
     # Определяем сумму расходов по дням недели в заданном периоде
     spend_by_weekday = pays_by_weekday['Сумма операции'].apply(lambda x: x[x < 0].abs().sum())
-    # print(spend_by_weekday)
-    # result = result.sort_values(by='day_of_week')
-
     return spend_by_weekday
 
 
@@ -77,6 +74,6 @@ def spending_by_workday(transactions: pd.DataFrame,
     pass
 
 
-if __name__ == '__main__':
-    df = pd.read_excel('operations.xlsx')
-    print(spending_by_weekday(df, '28.12.2021 16:15:14'))
+# if __name__ == '__main__':
+#     df = pd.read_excel('operations.xlsx')
+#     print(spending_by_weekday(df, '31.03.2021 23:59:59'))
