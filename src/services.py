@@ -2,7 +2,7 @@ import json
 import logging
 import re
 
-import pandas as pd
+# import pandas as pd
 
 # from typing import Any, Dict, List
 #
@@ -46,21 +46,22 @@ def find_people_pass(transactions: list[dict]) -> list[dict]:
     logger.info("Определен шаблон для поиска в описании операций")
     result_list = []
     logger.info("Начало обработки данных")
-    try:
-        for transaction in transactions:
-            if transaction.get('Категория') == 'Переводы' and re.search(pattern, transaction.get('Описание')):
-                logger.debug("Найден перевод")
-                result_list.append(transaction)
-    except Exception as e:
-        return []
+    for transaction in transactions:
+        if transaction.get('Категория') == 'Переводы' and re.search(pattern, transaction.get('Описание')):
+            logger.debug("Найден перевод")
+            result_list.append(transaction)
+    print(*result_list[:5], sep='\n')
+    with open('people_pass.json', 'w', encoding='utf-8') as json_file:
+        json.dump(result_list, json_file, indent=4, ensure_ascii=False)
+
     return result_list
 
 
-if __name__ == '__main__':
-    df = pd.read_excel('operations.xlsx')
-    transactions = df.to_dict(orient="records")
-    result = find_people_pass(transactions)
-    print(*result, sep='\n')
-    print(len(result))
-    with open('people_pass.json', 'w', encoding='utf-8') as json_file:
-        json.dump(result, json_file, indent=4, ensure_ascii=False)
+# if __name__ == '__main__':
+#     df = pd.read_excel('operations.xlsx')
+#     transactions = df.to_dict(orient="records")
+#     result = find_people_pass(transactions)
+#     # print(*result[:5], sep='\n')
+#     print(len(result))
+#     with open('people_pass.json', 'w', encoding='utf-8') as json_file:
+#         json.dump(result, json_file, indent=4, ensure_ascii=False)
