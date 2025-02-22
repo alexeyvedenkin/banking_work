@@ -1,29 +1,30 @@
 import datetime
 import logging
+import os
 from datetime import timedelta
-
-import pandas as pd
-
 from typing import Optional
 
+import pandas as pd
 from dateutil.relativedelta import relativedelta
 
+from config import DATA_DIR, LOGS_DIR
 from utils import days_translation
 
 logger = logging.getLogger("reports")
 logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler('logs/reports.log', "w", encoding="utf-8")
+log_file_path = os.path.join(LOGS_DIR, 'reports.log')
+file_handler = logging.FileHandler(log_file_path, "w", encoding="utf-8")
 file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s: %(message)s")
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
 
-def spending_by_category(transactions: pd.DataFrame,
-                         category: str,
-                         date: Optional[str] = None) -> pd.DataFrame:
-    """Возвращает траты по заданной категории за последние три месяца (от переданной даты)
-    """
-    pass
+# def spending_by_category(transactions: pd.DataFrame,
+#                          category: str,
+#                          date: Optional[str] = None) -> pd.DataFrame:
+#     """Возвращает траты по заданной категории за последние три месяца (от переданной даты)
+#     """
+#     pass
 
 
 def spending_by_weekday(transactions: pd.DataFrame,
@@ -33,7 +34,9 @@ def spending_by_weekday(transactions: pd.DataFrame,
 
     # Определяем период для обработки исходя из заданной даты
     work_date = datetime.datetime.strptime(date, "%d.%m.%Y %H:%M:%S")
+    logger.info("Определенa исходная дата")
     start_of_period = work_date - relativedelta(months=3) + timedelta(seconds=1)
+    logger.info("Определенa дата начала периода")
     print(f'Период выборки: с {start_of_period} до {work_date}')
     print()
 
@@ -67,13 +70,14 @@ def spending_by_weekday(transactions: pd.DataFrame,
     return spend_by_weekday
 
 
-def spending_by_workday(transactions: pd.DataFrame,
-                        date: Optional[str] = None) -> pd.DataFrame:
-    """Выводит средние траты в рабочий и в выходной день за последние три месяца (от переданной даты)
-    """
-    pass
+# def spending_by_workday(transactions: pd.DataFrame,
+#                         date: Optional[str] = None) -> pd.DataFrame:
+#     """Выводит средние траты в рабочий и в выходной день за последние три месяца (от переданной даты)
+#     """
+#     pass
 
 
-# if __name__ == '__main__':
-#     df = pd.read_excel('operations.xlsx')
-#     print(spending_by_weekday(df, '31.03.2021 23:59:59'))
+if __name__ == '__main__':
+    operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
+    df = pd.read_excel(operations_path)
+    print(spending_by_weekday(df, '31.03.2021 23:59:59'))
