@@ -179,13 +179,22 @@ def request_currency(user_currencies: dict) -> list[dict]:
 
         headers = {"apikey": f"{apikey}"}
 
-        response_data = []
+        currency_rates = []
         for currency in currency_list:
             url = f"https://v6.exchangerate-api.com/v6/{apikey}/pair/{currency}/RUB"
             response = requests.get(url, headers=headers)
-            response_data.append(response.json())
+            data = response.json()
+            currency_course = {}
+            for key, value in data.items():
 
-        return response_data
+                if key in ['base_code', 'conversion_rate']:
+                    if key == 'conversion_rate':
+                        currency_course['rate'] = round(float(value), 2)
+                    else:
+                        currency_course['currency'] = value
+            currency_rates.append(currency_course)
+
+        return currency_rates
 
 
 def stock_indices(user_currencies: dict) -> list[dict]:
@@ -259,4 +268,5 @@ if __name__ == '__main__':
     # print(get_start_for_period('2025-02-18 22:54:00', 'ALL'))
     print(get_names_of_currency_and_stocks('user_settings.json'))
     user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
-    print(*stock_indices(user_settings_path), sep='\n')
+    # print(*stock_indices(user_settings_path), sep='\n')
+    print(*request_currency(user_settings_path), sep='\n')
