@@ -1,3 +1,4 @@
+import datetime
 import os
 import pandas as pd
 from src import reports, services, utils, views
@@ -14,11 +15,13 @@ logger.addHandler(file_handler)
 
 
 work_date = "18.02.2025 22:54:00"
+now_date = datetime.datetime.now()
 operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
 df = pd.read_excel(operations_path)
 data = df.to_dict('records')
 
-
+print()
+print(utils.greeting())
 print()
 print('Результат работы функции find_people_pass:')
 print()
