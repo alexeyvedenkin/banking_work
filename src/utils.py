@@ -186,7 +186,6 @@ def request_currency(user_currencies: dict) -> list[dict]:
             data = response.json()
             currency_course = {}
             for key, value in data.items():
-
                 if key in ['base_code', 'conversion_rate']:
                     if key == 'conversion_rate':
                         currency_course['rate'] = round(float(value), 2)

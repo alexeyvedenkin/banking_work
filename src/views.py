@@ -4,7 +4,7 @@ import logging
 import os
 from data import *
 from typing import Any, Dict, List
-from config import LOGS_DIR, DATA_DIR
+from config import LOGS_DIR, DATA_DIR, RESULT_DIR
 import pandas as pd
 import requests
 from dotenv import load_dotenv
@@ -22,28 +22,30 @@ file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s: %(me
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
-# Загрузка переменных окружения из .env файла
-load_dotenv()
-
-# Получение значения переменной API_KEY из .env-файла
-apikey = os.getenv('APIKEY_FINNHUB')
-
-
-def main_page():
-    """Возвращает JSON-ответ по настройкам
-    """
-    pass
+# # Загрузка переменных окружения из .env файла
+# load_dotenv()
+#
+# # Получение значения переменной API_KEY из .env-файла
+# # apikey = os.getenv('APIKEY_FINNHUB')
 
 
-def events_page():
-    """Возвращает JSON-ответ по настройкам
-    """
-    pass
+# def main_page():
+#     """Возвращает JSON-ответ по настройкам
+#     """
+#     pass
+#
+#
+# def events_page():
+#     """Возвращает JSON-ответ по настройкам
+#     """
+#     pass
 
 
-def spending_by_period(df, work_date: str, type_of_period: str = 'W') -> Dict:
+def transactions_by_period(df, work_date: str, type_of_period: str = 'W') -> Dict:
     """Возвращает общую сумму расходов за период
     """
+    total_result = {}
+    expenses_dict = {}
     # Определяем период для обработки исходя из заданной даты
     start = utils.get_start_for_period(work_date, type_of_period)
     work_date = datetime.datetime.strptime(work_date, "%d.%m.%Y %H:%M:%S")
@@ -65,9 +67,9 @@ def spending_by_period(df, work_date: str, type_of_period: str = 'W') -> Dict:
     print()
 
     # Формируем словарь словарей для выгрузки в JSON-файл
-    total_result = {'expenses': {'total_amount': total_payments}}
-    print(total_result)
-    print()
+    # total_result = {'expenses': {'total_amount': total_payments}}
+    # print(total_result)
+    # print()
 
     # Группируем датафрейм по категориям
     grouped_by_categories_spending = filtered_df_for_spending.groupby('Категория', observed=False)
@@ -114,9 +116,9 @@ def spending_by_period(df, work_date: str, type_of_period: str = 'W') -> Dict:
     print(total_spending, type(total_spending))
     print()
 
+    # Формируем словарь словарей для выгрузки в JSON
     spending_result = []
     total_info = total_spending.to_dict()
-
     for category, amount in total_info.items():
         spending_result.append({'category': category, 'amount': amount})
 
@@ -134,6 +136,7 @@ def spending_by_period(df, work_date: str, type_of_period: str = 'W') -> Dict:
     # print()
 
     # Фильтруем исходный датафрейм по заданному периоду и положительной сумме операции (поступления)
+    # Фильтруем исходный датафрейм по заданному периоду и положительной сумме операции (поступления)
     filtered_df_for_incomes = df[(start <= df['Дата операции']) & (df['Дата операции'] <= work_date)
                                  & (df['Сумма операции'] > 0)]
 
@@ -150,44 +153,57 @@ def spending_by_period(df, work_date: str, type_of_period: str = 'W') -> Dict:
 
     # Сортируем результат группировки по убыванию
     sorted_result_incomes = result_incomes.sort_values(ascending=False)
-    print(sorted_result_incomes)
+    print(sorted_result_incomes, type(sorted_result_incomes))
     print()
 
-    sorted_result_incomes_df = sorted_result_incomes.reset_index()
+    # sorted_result_incomes_df = sorted_result_incomes.reset_index()
 
-    # # Формируем список словарей для выгрузки в JSON-файл
+    # Формируем словарь словарей для выгрузки в JSON-файл
+    main_income = {}
+    main_income['total_amount'] = total_incomes
+    incomes_result = []
+    incomes_by_category = sorted_result_incomes.to_dict()
+    for category, amount in incomes_by_category.items():
+        incomes_result.append({'category': category, 'amount': amount})
+
+    main_income['main'] = incomes_result
+    print(main_income, type(main_income))
+
     # main_incomes = sorted_result_incomes_df.set_index('index').to_dict(orient='index')
     # print(main_incomes)
     # print()
 
     # Формируем сводный словарь словарей для выгрузки в JSON-файл
-    # total_result['main'] = main_payments
-    # total_result['transfers_and_cash'] = transfers_and_cash
-    # # total_result['income'] = main_incomes
-    # print(total_result)
+    expenses_dict['total_amount'] = total_payments
+    expenses_dict['main'] = spending_result
+    expenses_dict['transfers_and_cash'] = transfers_and_cash
+    total_result['expenses'] = expenses_dict
+    total_result['income'] = main_income
+    print(total_result)
 
-    with open('views.json', 'w', encoding='utf-8') as file:
+    transactions_by_period_path = os.path.join(RESULT_DIR, 'views.json')
+    with open(transactions_by_period_path, 'w', encoding='utf-8') as file:
         json.dump(total_result, file, indent=4, ensure_ascii=False)
 
     return total_result  # result_incomes
 
 
-# Создание заголовка с токеном доступа API
-headers = {"apikey": f"{apikey}"}
+# # Создание заголовка с токеном доступа API
+# headers = {"apikey": f"{apikey}"}
 
 
-def read_currency_and_stocks(path: str) -> Any:
-    """Получает данные о курсах валют с API-ресурса и возвращает в формате dict{dict}
-    """
-    if not os.path.exists(path):
-        logger.error('Не задан путь к исходным данным')
-        return []
-    with open(path, encoding="utf-8") as file_json:
-        logger.info('Получение данных из исходного файла')
-        data_json = json.load(file_json)
-        logger.info('Полученные данные преобразованы в объект Python')
-        # print(*data_json, end='\n')
-    return data_json
+# def read_currency_and_stocks(path: str) -> Any:
+#     """Получает данные о курсах валют с API-ресурса и возвращает в формате dict{dict}
+#     """
+#     if not os.path.exists(path):
+#         logger.error('Не задан путь к исходным данным')
+#         return []
+#     with open(path, encoding="utf-8") as file_json:
+#         logger.info('Получение данных из исходного файла')
+#         data_json = json.load(file_json)
+#         logger.info('Полученные данные преобразованы в объект Python')
+#         # print(*data_json, end='\n')
+#     return data_json
     # if "operationAmount" not in transaction:
     #     print("Ошибка: ключ 'operationAmount' отсутствует в транзакции")
     #     return 0.0
@@ -226,7 +242,7 @@ def read_currency_and_stocks(path: str) -> Any:
 
 
 if __name__ == '__main__':
-    print('hi!')
+    print(utils.greeting())
     operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
     df = pd.read_excel(operations_path)
-    print(spending_by_period(df, '31.12.2021 23:59:59', 'W'))
+    print(transactions_by_period(df, '31.12.2021 23:59:59', 'Y'))
