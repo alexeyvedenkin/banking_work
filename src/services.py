@@ -1,16 +1,19 @@
 import json
 import logging
+import os
 import re
 
-# import pandas as pd
+from config import LOGS_DIR, DATA_DIR, RESULT_DIR
+import pandas as pd
 
-# from typing import Any, Dict, List
-#
-# from utils import read_excel
+from typing import Any, Dict, List
+
+from utils import read_excel
 
 logger = logging.getLogger("services")
 logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler('logs/services.log', "w", encoding="utf-8")
+log_file_path = os.path.join(LOGS_DIR, 'services.log')
+file_handler = logging.FileHandler(log_file_path, "w", encoding="utf-8")
 file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s: %(message)s")
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
@@ -51,17 +54,20 @@ def find_people_pass(transactions: list[dict]) -> list[dict]:
             logger.debug("Найден перевод")
             result_list.append(transaction)
     print(*result_list[:5], sep='\n')
-    with open('people_pass.json', 'w', encoding='utf-8') as json_file:
+    people_pass_path = os.path.join(RESULT_DIR, 'people_pass.json')
+    with open(people_pass_path, 'w', encoding='utf-8') as json_file:
         json.dump(result_list, json_file, indent=4, ensure_ascii=False)
 
     return result_list
 
 
-# if __name__ == '__main__':
-#     df = pd.read_excel('operations.xlsx')
-#     transactions = df.to_dict(orient="records")
-#     result = find_people_pass(transactions)
-#     # print(*result[:5], sep='\n')
-#     print(len(result))
-#     with open('people_pass.json', 'w', encoding='utf-8') as json_file:
-#         json.dump(result, json_file, indent=4, ensure_ascii=False)
+if __name__ == '__main__':
+    operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
+    df = pd.read_excel(operations_path)
+    transactions = df.to_dict(orient="records")
+    result = find_people_pass(transactions)
+    print(*result[:5], sep='\n')
+    print(len(result))
+    people_pass_path = os.path.join(RESULT_DIR, 'people_pass.json')
+    with open(people_pass_path, 'w', encoding='utf-8') as json_file:
+        json.dump(result, json_file, indent=4, ensure_ascii=False)
