@@ -1,8 +1,8 @@
-import datetime
+import datetime as dt
 import json
 import logging
 import os
-from datetime import timedelta
+from datetime import datetime as dt_class, timedelta
 from typing import Any
 
 import pandas as pd
@@ -44,9 +44,9 @@ load_dotenv()
 #         return reading
 
 
-def get_work_datetime(work_datetime: str) -> datetime.datetime:
+def get_work_datetime(work_datetime: str) -> Any:
     work_datetime = '31.12.2021 23:59:59'
-    local_work_datetime = datetime.datetime(work_datetime)
+    local_work_datetime = dt.dt_class(work_datetime)
     print('local_work_datetime', local_work_datetime)
     return local_work_datetime
 
@@ -89,10 +89,10 @@ def days_translation() -> dict:
     return days_on_russian
 
 
-def get_start_for_period(work_date: str, type_of_period: str) -> datetime.datetime:
+def get_start_for_period(work_date: str, type_of_period: str) -> Any:
     """Возвращает начало периода выборки по заданному критерию для заданной даты
     """
-    work_datetime = datetime.datetime.strptime(work_date, "%d.%m.%Y %H:%M:%S")
+    work_datetime = dt.datetime.strptime(work_date, "%d.%m.%Y %H:%M:%S")
     if type_of_period == 'W':
         start_by_period = get_start_of_week(work_datetime)
     elif type_of_period == 'M':
@@ -104,7 +104,7 @@ def get_start_for_period(work_date: str, type_of_period: str) -> datetime.dateti
     return start_by_period
 
 
-def get_start_of_week(work_date: datetime.datetime) -> datetime.datetime:
+def get_start_of_week(work_date: dt) -> Any:
     # Определяем дату начала недели
     start_of_week = work_date - timedelta(days=work_date.weekday())
     # Устанавливаем время начала недели на 00:00:00
@@ -112,25 +112,25 @@ def get_start_of_week(work_date: datetime.datetime) -> datetime.datetime:
     return start_of_week
 
 
-def get_start_of_month(work_date: datetime.datetime) -> datetime.datetime:
+def get_start_of_month(work_date: dt) -> Any:
     # Определяем дату начала месяца
-    start_of_month = datetime.datetime(work_date.year, work_date.month, 1)
+    start_of_month = dt.datetime(work_date.year, work_date.month, 1)
     # Устанавливаем время начала месяца на 00:00:00
     start_of_month = start_of_month.replace(hour=0, minute=0, second=0, microsecond=0)
     return start_of_month
 
 
-def get_start_of_year(work_date: datetime.datetime) -> datetime.datetime:
+def get_start_of_year(work_date: dt) -> Any:
     # Определяем дату начала года
-    start_of_year = datetime.datetime(work_date.year, 1, 1)
+    start_of_year = dt.datetime(work_date.year, 1, 1)
     # Устанавливаем время начала года на 00:00:00
     start_of_year = start_of_year.replace(hour=0, minute=0, second=0, microsecond=0)
     return start_of_year
 
 
-def get_start_without_period(work_date: datetime.datetime) -> datetime.datetime:
+def get_start_without_period(work_date: dt) -> Any:
     # Определяем дату начала отбора # 0001-01-01
-    start_of_all = datetime.datetime(1, 1, work_date.day)
+    start_of_all = dt.datetime(1, 1, work_date.day)
     # Устанавливаем время начала отбора на 00:00:00
     start_of_all = start_of_all.replace(hour=0, minute=0, second=0, microsecond=0)
     return start_of_all
@@ -240,6 +240,22 @@ def stock_indices(user_currencies: dict) -> list[dict]:
         return stock_prices
 
 
+def greeting(*args) -> Any:
+    current_date_time = dt.datetime.now()
+    if 6 <= current_date_time.hour < 12:
+        greet = 'Доброе утро'
+    elif 12 <= current_date_time.hour < 18:
+        greet = 'Добрый день'
+    elif 18 <= current_date_time.hour < 24:
+        greet = 'Добрый вечер'
+    else:
+        greet = 'Доброй ночи'
+
+    print(current_date_time)
+    return f'{greet}, уважаемый пользователь!'
+
+
+
 # def read_currency_and_stocks(path: str) -> Any:
 #     """Получает данные о курсах валют с API-ресурса и возвращает в формате dict{dict}
 #     """
@@ -266,7 +282,8 @@ if __name__ == '__main__':
     # print(get_start_for_period('2025-02-18 22:54:00', 'M'))
     # print(get_start_for_period('2025-02-18 22:54:00', 'Y'))
     # print(get_start_for_period('2025-02-18 22:54:00', 'ALL'))
-    print(get_names_of_currency_and_stocks('user_settings.json'))
-    user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
-    # print(*stock_indices(user_settings_path), sep='\n')
-    print(*request_currency(user_settings_path), sep='\n')
+    # print(get_names_of_currency_and_stocks('user_settings.json'))
+    # user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
+    # # print(*stock_indices(user_settings_path), sep='\n')
+    # print(*request_currency(user_settings_path), sep='\n')
+    print(greeting(dt.datetime.now()))
