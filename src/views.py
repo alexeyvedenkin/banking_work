@@ -2,14 +2,13 @@ import datetime
 import json
 import logging
 import os
-from data import *
 from typing import Any, Dict, List
 from config import LOGS_DIR, DATA_DIR, RESULT_DIR
 import pandas as pd
-import requests
-from dotenv import load_dotenv
-#
-from pandas import DataFrame
+# import requests
+# from dotenv import load_dotenv
+# #
+# from pandas import DataFrame
 
 from src import utils
 
@@ -181,12 +180,23 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'W') -> Dic
     total_result['income'] = main_income
     print(total_result)
 
-    transactions_by_period_path = os.path.join(RESULT_DIR, 'views.json')
-    with open(transactions_by_period_path, 'w', encoding='utf-8') as file:
-        json.dump(total_result, file, indent=4, ensure_ascii=False)
+
 
     return total_result  # result_incomes
 
+
+def complete_result(*args, **kwargs):
+    final_result = transactions_by_period(df, work_date='31.12.2021 23:59:59')
+    user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
+    curr_data = utils.request_currency(user_settings_path)
+    stock_data = utils.stock_indices(user_settings_path)
+    final_result['currency_rates'] = curr_data
+    final_result['stock_prices'] = stock_data
+    complete_path = os.path.join(RESULT_DIR, 'views.json')
+    with open(complete_path, 'w', encoding='utf-8') as file:
+        json.dump(final_result, file, indent=4, ensure_ascii=False)
+
+    return final_result
 
 # # Создание заголовка с токеном доступа API
 # headers = {"apikey": f"{apikey}"}
@@ -245,4 +255,5 @@ if __name__ == '__main__':
     print(utils.greeting())
     operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
     df = pd.read_excel(operations_path)
-    print(transactions_by_period(df, '31.12.2021 23:59:59', 'Y'))
+    # print(transactions_by_period(df, '31.12.2021 23:59:59', 'Y'))
+    print(*complete_result(), sep='\n')
