@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from config import DATA_DIR, LOGS_DIR
 # from main import work_date
 
+
 utils_logger = logging.getLogger('utils')
 utils_logger.setLevel(logging.DEBUG)
 log_file_path = os.path.join(LOGS_DIR, 'utils.log')
@@ -189,7 +190,7 @@ def request_currency(user_currencies: dict) -> list[dict]:
 
 def stock_indices(user_currencies: dict) -> list[dict]:
     """Запрашивает на API-сервисе курсы акций, заданных
-    пользователем и возвращает результат запроса
+    пользователем, и возвращает результат запроса
     """
     utils_logger.info('Получение данных из исходного файла')
     user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
@@ -212,13 +213,22 @@ def stock_indices(user_currencies: dict) -> list[dict]:
 
         headers = {"apikey": f"{apikey}"}
 
-        response_data = []
+        stock_prices = []
         for stock in stock_list:
-            url = f"https://api.twelvedata.com/time_series?symbol={stock}&interval=1min&apikey={apikey}"
+            url = f"https://api.twelvedata.com/eod?symbol={stock}&interval=1min&apikey={apikey}"
             response = requests.get(url, headers=headers)
-            response_data.append(response.json())
+            data = response.json()
 
-        return response_data
+            stock_price = {}
+            for key, value in data.items():
+                if key in ['symbol', 'close']:
+                    if key == 'close':
+                        stock_price['price'] = round(float(value), 2)
+                    else:
+                        stock_price['stock'] = value
+            stock_prices.append(stock_price)
+
+        return stock_prices
 
 
 # def read_currency_and_stocks(path: str) -> Any:
@@ -239,10 +249,10 @@ if __name__ == '__main__':
     # print(*read_csv("transactions.csv")[:5], sep='\n')
     # print()
     # operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
-    # # print(read_excel(operations_path), sep='\n')
+    # print(read_excel(operations_path), sep='\n')
     # print(pd.read_excel(operations_path)[:5], sep='\n')
-    # # df = pd.read_excel('operations.xlsx', usecols=[0, 4, 9, 11])
-    # # print(df[:20])
+    # df = pd.read_excel('operations.xlsx', usecols=[0, 4, 9, 11])
+    # print(df[:20])
     # print(get_start_for_period('18.02.2025 22:54:00', 'W'))
     # print(get_start_for_period('2025-02-18 22:54:00', 'M'))
     # print(get_start_for_period('2025-02-18 22:54:00', 'Y'))
