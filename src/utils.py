@@ -67,10 +67,10 @@ def read_excel(filename: str) -> Any:
     return transactions_list
 
 
-def filter_by_date(my_lst: list[dict], start: str, stop: str) -> list[dict]:
-    """Возвращает список словарей, отфильтрованный по дате
-    """
-    pass
+# def filter_by_date(my_lst: list[dict], start: str, stop: str) -> list[dict]:
+#     """Возвращает список словарей, отфильтрованный по дате
+#     """
+#     pass
 
 
 def days_translation() -> dict:
@@ -138,6 +138,7 @@ def get_start_without_period(work_date: datetime.datetime) -> datetime.datetime:
 def get_names_of_currency_and_stocks(path: str) -> Any:
     """ Получает данные из внешнего JSON-файла и преобразовывает в объект Python
     """
+    path = os.path.join(DATA_DIR, 'user_settings.json')
     utils_logger.debug('Получение пути к файлу с данными')
     if not os.path.exists(path):
         utils_logger.error('Не задан путь к исходным данным')
@@ -187,18 +188,18 @@ def request_currency(user_currencies: dict) -> list[dict]:
 
 
 def stock_indices(user_currencies: dict) -> list[dict]:
-    """Запрашивает на API-сервисе курсы валют, заданных
+    """Запрашивает на API-сервисе курсы акций, заданных
     пользователем и возвращает результат запроса
     """
     utils_logger.info('Получение данных из исходного файла')
     user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
-    currency_list = get_names_of_currency_and_stocks(user_settings_path).get('user_currencies', 'Нет данных')
+    stock_list = get_names_of_currency_and_stocks(user_settings_path).get('user_stocks', 'Нет данных')
     utils_logger.info('Получены данные из исходного файла')
-    print(currency_list, type(currency_list))
-    if "RUB" not in currency_list:
+    print(stock_list, type(stock_list))
+    if "RUB" not in stock_list:
         utils_logger.debug('Проверено наличие "RUB" в исходном файле')
         utils_logger.debug('Присвоено значение apikey из для получения данных из .env')
-        apikey = os.getenv('APIKEY_EXCHANGERATE')
+        apikey = os.getenv('APIKEY_TWELVEDATA_STOCK')
         if apikey:
             utils_logger.debug('Прочитан APIKEY')
         else:
@@ -212,8 +213,8 @@ def stock_indices(user_currencies: dict) -> list[dict]:
         headers = {"apikey": f"{apikey}"}
 
         response_data = []
-        for currency in currency_list:
-            url = f"https://v6.exchangerate-api.com/v6/{apikey}/pair/{currency}/RUB"
+        for stock in stock_list:
+            url = f"https://api.twelvedata.com/time_series?symbol={stock}&interval=1min&apikey={apikey}"
             response = requests.get(url, headers=headers)
             response_data.append(response.json())
 
@@ -246,5 +247,6 @@ if __name__ == '__main__':
     # print(get_start_for_period('2025-02-18 22:54:00', 'M'))
     # print(get_start_for_period('2025-02-18 22:54:00', 'Y'))
     # print(get_start_for_period('2025-02-18 22:54:00', 'ALL'))
-    # print(get_names_of_currency_and_stocks('user_settings.json'))
-    print(request_currency(get_names_of_currency_and_stocks('user_settings.json')))
+    print(get_names_of_currency_and_stocks('user_settings.json'))
+    user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
+    print(*stock_indices(user_settings_path), sep='\n')
