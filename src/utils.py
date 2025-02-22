@@ -1,21 +1,27 @@
-# import csv
 import datetime
+import json
 import logging
 import os
-from typing import Any
-from dateutil.relativedelta import relativedelta
 from datetime import timedelta
+from typing import Any
 
-# import pandas as pd
+import pandas as pd
+import requests
+from dateutil.relativedelta import relativedelta
+from dotenv import load_dotenv
+
+from config import DATA_DIR, LOGS_DIR
+# from main import work_date
 
 utils_logger = logging.getLogger('utils')
 utils_logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler('logs/utils.log', "w", encoding="utf-8")
+log_file_path = os.path.join(LOGS_DIR, 'utils.log')
+file_handler = logging.FileHandler(log_file_path, "w", encoding="utf-8")
 file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s: %(message)s")
 file_handler.setFormatter(file_formatter)
 utils_logger.addHandler(file_handler)
 
-#
+load_dotenv()
 #
 # excel_data = pd.read_excel("data.transactions_excel.xlsx")
 # print(excel_data.shape)
@@ -37,10 +43,18 @@ utils_logger.addHandler(file_handler)
 #         return reading
 
 
+def get_work_datetime(work_datetime: str) -> datetime.datetime:
+    work_datetime = '31.12.2021 23:59:59'
+    local_work_datetime = datetime.datetime(work_datetime)
+    print('local_work_datetime', local_work_datetime)
+    return local_work_datetime
+
+
 def read_excel(filename: str) -> Any:
     """
     Считывает файл в формате xlsx и возвращает данные в виде списка словарей
     """
+
     if not os.path.exists(filename):
         utils_logger.error("File not found")
         return []  # Return an empty list in case of error
@@ -77,16 +91,16 @@ def days_translation() -> dict:
 def get_start_for_period(work_date: str, type_of_period: str) -> datetime.datetime:
     """Возвращает начало периода выборки по заданному критерию для заданной даты
     """
-    work_datetime = datetime.datetime.strptime(work_date, "%Y-%m-%d %H:%M:%S")
+    work_datetime = datetime.datetime.strptime(work_date, "%d.%m.%Y %H:%M:%S")
     if type_of_period == 'W':
-        start_of_period = get_start_of_week(work_datetime)
+        start_by_period = get_start_of_week(work_datetime)
     elif type_of_period == 'M':
-        start_of_period = get_start_of_month(work_datetime)
+        start_by_period = get_start_of_month(work_datetime)
     elif type_of_period == 'Y':
-        start_of_period = get_start_of_year(work_datetime)
+        start_by_period = get_start_of_year(work_datetime)
     elif type_of_period == 'ALL':
-        start_of_period = get_start_without_period(work_datetime)
-    return start_of_period
+        start_by_period = get_start_without_period(work_datetime)
+    return start_by_period
 
 
 def get_start_of_week(work_date: datetime.datetime) -> datetime.datetime:
@@ -115,29 +129,122 @@ def get_start_of_year(work_date: datetime.datetime) -> datetime.datetime:
 
 def get_start_without_period(work_date: datetime.datetime) -> datetime.datetime:
     # Определяем дату начала отбора # 0001-01-01
-    start_of_all = datetime.datetime(1, 1, 1)
+    start_of_all = datetime.datetime(1, 1, work_date.day)
     # Устанавливаем время начала отбора на 00:00:00
     start_of_all = start_of_all.replace(hour=0, minute=0, second=0, microsecond=0)
     return start_of_all
 
 
-# # Заданная дата
-# date = datetime(2025, 2, 18, 14, 15, 16)
-#
-# # Вычислить начало недели
-# start_of_week = get_start_of_week(date)
+def get_names_of_currency_and_stocks(path: str) -> Any:
+    """ Получает данные из внешнего JSON-файла и преобразовывает в объект Python
+    """
+    utils_logger.debug('Получение пути к файлу с данными')
+    if not os.path.exists(path):
+        utils_logger.error('Не задан путь к исходным данным')
+        print('Не задан путь')
+        return []
+    with open(path, encoding="utf-8") as file_json:
+        utils_logger.info('Получение данных из исходного файла')
+        data_json = json.load(file_json)
+        utils_logger.info('Полученные данные преобразованы в объект Python')
+        print(data_json, end='\n')
+        print(type(data_json))
+    return data_json
 
+
+def request_currency(user_currencies: dict) -> list[dict]:
+    """Запрашивает на API-сервисе курсы валют, заданных
+    пользователем и возвращает результат запроса
+    """
+    utils_logger.info('Получение данных из исходного файла')
+    user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
+    currency_list = get_names_of_currency_and_stocks(user_settings_path).get('user_currencies', 'Нет данных')
+    utils_logger.info('Получены данные из исходного файла')
+    print(currency_list, type(currency_list))
+    if "RUB" not in currency_list:
+        utils_logger.debug('Проверено наличие "RUB" в исходном файле')
+        utils_logger.debug('Присвоено значение apikey из для получения данных из .env')
+        apikey = os.getenv('APIKEY_EXCHANGERATE')
+        if apikey:
+            utils_logger.debug('Прочитан APIKEY')
+        else:
+            utils_logger.error('НЕ прочитан APIKEY')
+        print(apikey)
+
+        if not apikey:
+            print("Ошибка: API ключ не найден. Убедитесь, что он задан в .env файле.")
+            return 0.0
+
+        headers = {"apikey": f"{apikey}"}
+
+        response_data = []
+        for currency in currency_list:
+            url = f"https://v6.exchangerate-api.com/v6/{apikey}/pair/{currency}/RUB"
+            response = requests.get(url, headers=headers)
+            response_data.append(response.json())
+
+        return response_data
+
+
+def stock_indices(user_currencies: dict) -> list[dict]:
+    """Запрашивает на API-сервисе курсы валют, заданных
+    пользователем и возвращает результат запроса
+    """
+    utils_logger.info('Получение данных из исходного файла')
+    user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
+    currency_list = get_names_of_currency_and_stocks(user_settings_path).get('user_currencies', 'Нет данных')
+    utils_logger.info('Получены данные из исходного файла')
+    print(currency_list, type(currency_list))
+    if "RUB" not in currency_list:
+        utils_logger.debug('Проверено наличие "RUB" в исходном файле')
+        utils_logger.debug('Присвоено значение apikey из для получения данных из .env')
+        apikey = os.getenv('APIKEY_EXCHANGERATE')
+        if apikey:
+            utils_logger.debug('Прочитан APIKEY')
+        else:
+            utils_logger.error('НЕ прочитан APIKEY')
+        print(apikey)
+
+        if not apikey:
+            print("Ошибка: API ключ не найден. Убедитесь, что он задан в .env файле.")
+            return 0.0
+
+        headers = {"apikey": f"{apikey}"}
+
+        response_data = []
+        for currency in currency_list:
+            url = f"https://v6.exchangerate-api.com/v6/{apikey}/pair/{currency}/RUB"
+            response = requests.get(url, headers=headers)
+            response_data.append(response.json())
+
+        return response_data
+
+
+# def read_currency_and_stocks(path: str) -> Any:
+#     """Получает данные о курсах валют с API-ресурса и возвращает в формате dict{dict}
+#     """
+#     if not os.path.exists(path):
+#         utils_logger.error('Не задан путь к исходным данным')
+#         return []
+#     with open(path, encoding="utf-8") as file_json:
+#         utils_logger.info('Получение данных из исходного файла')
+#         data_json = json.load(file_json)
+#         utils_logger.info('Полученные данные преобразованы в объект Python')
+#         # print(*data_json, end='\n')
+#     return data_json
 
 
 if __name__ == '__main__':
     # print(*read_csv("transactions.csv")[:5], sep='\n')
     # print()
-    # print(read_excel('operations.xlsx'), sep='\n')
-    # print(pd.read_excel("operations.xlsx")[:5], sep='\n')
-    # df = pd.read_excel('operations.xlsx', usecols=[0, 4, 9, 11])
-    # print(df[:20])
-    print(get_start_for_period('2025-02-18 22:54:00', 'W'))
-    print(get_start_for_period('2025-02-18 22:54:00', 'M'))
-    print(get_start_for_period('2025-02-18 22:54:00', 'Y'))
-    print(get_start_for_period('2025-02-18 22:54:00', 'ALL'))
-
+    # operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
+    # # print(read_excel(operations_path), sep='\n')
+    # print(pd.read_excel(operations_path)[:5], sep='\n')
+    # # df = pd.read_excel('operations.xlsx', usecols=[0, 4, 9, 11])
+    # # print(df[:20])
+    # print(get_start_for_period('18.02.2025 22:54:00', 'W'))
+    # print(get_start_for_period('2025-02-18 22:54:00', 'M'))
+    # print(get_start_for_period('2025-02-18 22:54:00', 'Y'))
+    # print(get_start_for_period('2025-02-18 22:54:00', 'ALL'))
+    # print(get_names_of_currency_and_stocks('user_settings.json'))
+    print(request_currency(get_names_of_currency_and_stocks('user_settings.json')))
