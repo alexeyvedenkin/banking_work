@@ -8,7 +8,7 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 from config import DATA_DIR, LOGS_DIR
-from utils import days_translation
+from src.utils import days_translation
 
 logger = logging.getLogger("reports")
 logger.setLevel(logging.DEBUG)

@@ -6,7 +6,7 @@ from functools import wraps
 import pandas as pd
 
 from config import DATA_DIR, LOGS_DIR, RESULT_DIR
-from reports import spending_by_weekday
+from src.reports import spending_by_weekday
 
 logger = logging.getLogger("decorator")
 logger.setLevel(logging.DEBUG)

@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from src.reports import spending_by_weekday
 from src.utils import (days_translation, get_start_for_period, get_start_of_month, get_start_of_week,
                        get_start_of_year, get_start_without_period, get_work_datetime)
 

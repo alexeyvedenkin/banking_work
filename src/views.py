@@ -84,7 +84,7 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'M') -> Dic
     # print(transfers_and_cash)
 
     # Сумма по категории "Переводы":
-    total_transfers = int(result_spending['Переводы'])
+    total_transfers = int(result_spending['Переводы']) if 'Переводы' in result_spending.index else 0
     # print('total_transfers:', total_transfers)
     # print()
 
@@ -123,20 +123,6 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'M') -> Dic
     for category, amount in total_info.items():
         spending_result.append({'category': category, 'amount': amount})
 
-    # total_spending_df = total_spending.set_index('index').to_dict(orient='index')
-    # total_spending_df = pd.DataFrame.to_dict(total_spending)   # columns=['category', 'amount'])
-    # total_spending_df.set_index('index').to_dict(orient='index')
-    # # Присвоение имен столбцам
-    # print(total_spending_df.head(7), type(total_spending_df))
-    # print()
-    # total_spending_df.columns = ['category', 'amount']
-
-    # Формируем список словарей для выгрузки в JSON-файл
-    # main_payments = total_spending_df.set_index('index').to_dict(orient='index')
-    # print(main_payments)
-    # print()
-
-    # Фильтруем исходный датафрейм по заданному периоду и положительной сумме операции (поступления)
     # Фильтруем исходный датафрейм по заданному периоду и положительной сумме операции (поступления)
     filtered_df_for_incomes = df[(start <= df['Дата операции']) & (df['Дата операции'] <= work_date)
                                  & (df['Сумма операции'] > 0)]
