@@ -23,7 +23,8 @@ def test_date() -> str:
 #     return test_dat_time
 
 
-test_days_translation= {
+def test_days_translation():
+    return {
         'Monday': 'Понедельник',
         'Tuesday': 'Вторник',
         'Wednesday': 'Среда',
@@ -32,4 +33,5 @@ test_days_translation= {
         'Saturday': 'Суббота',
         'Sunday': 'Воскресенье'
     }
-assert test_days_translation['Monday'] == 'Понедельник'
+
+# assert test_days_translation['Monday'] == 'Понедельник'

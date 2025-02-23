@@ -668,6 +668,18 @@ files = [
 ]
 
 [[package]]
+name = "pyini"
+version = "0.1.1"
+description = "INI configuration file parser with useful standard extensions."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "pyini-0.1.1-py3-none-any.whl", hash = "sha256:8a23be4fba62ac65874ab2919b151c8293f002e7c3cc4841e7f00dde0400d78a"},
+    {file = "pyini-0.1.1.tar.gz", hash = "sha256:d6a4b2f63e15a77b29c9e2466e949053f24e0193807fadba5aa4b5f8c4aaa318"},
+]
+
+[[package]]
 name = "pytest"
 version = "8.3.4"
 description = "pytest: simple powerful testing with Python"
@@ -828,4 +840,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "342b92d8cbe3de207afdbf9a4e96e62089724fb87ac1737df79308e876c8fb68"
+content-hash = "c1ec2525d336dd89929534ff759336c1bc0356839713db3df8ccf4bcfac2741e"

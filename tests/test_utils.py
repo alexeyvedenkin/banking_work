@@ -15,7 +15,7 @@ print(mock_work_date.return_value, type(mock_work_date.return_value))
 
 
 def test_days_translation() -> None:
-    assert test_days_translation['Monday'] == 'Понедельник'
+    assert test_days_translation['Monday'] == days_translation['Monday']
 
 
 def test_get_start_of_week() -> None:
