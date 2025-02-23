@@ -1,6 +1,7 @@
 import pytest
 import datetime
 from datetime import datetime
+from src import utils
 
 
 @pytest.fixture
@@ -8,9 +9,9 @@ def test_date() -> str:
     """
     Тестовые данные для применения datetime
     """
-    test_dat = '31.12.2021 23:59:59'
+    test_date = datetime.datetime.strptime('31.03.2021 23:59:59', "%d.%m.%Y %H:%M:%S")
 
-    return test_dat
+    return test_date
 
 
 # def test_datetime() -> datetime.datetime:
@@ -22,8 +23,7 @@ def test_date() -> str:
 #     return test_dat_time
 
 
-def test_days_translation() -> dict:
-    test_days_on_russian = {
+test_days_translation= {
         'Monday': 'Понедельник',
         'Tuesday': 'Вторник',
         'Wednesday': 'Среда',
@@ -32,4 +32,4 @@ def test_days_translation() -> dict:
         'Saturday': 'Суббота',
         'Sunday': 'Воскресенье'
     }
-    return test_days_on_russian
+assert test_days_translation['Monday'] == 'Понедельник'

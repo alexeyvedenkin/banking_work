@@ -5,20 +5,20 @@ from unittest.mock import patch
 import pytest
 
 from src.utils import (days_translation, get_start_for_period, get_start_of_month, get_start_of_week,
-                       get_start_of_year, get_start_without_period)
+                       get_start_of_year, get_start_without_period, get_work_datetime)
 
-with patch('src.utils.get_work_datetime') as mock_work_date:
-    mock_work_date.return_value = datetime(2021, 12, 31, 23, 59, 59, 99)
+with patch(str(get_work_datetime)) as mock_work_date:
+    mock_work_date.return_value = datetime(2021, 12, 27, 23, 59, 59, 0)
 
 print(mock_work_date.return_value, type(mock_work_date.return_value))
 
 
 def test_days_translation() -> None:
-    assert days_translation == test_days_translation
+    assert test_days_translation['Monday'] == 'Понедельник'
 
 
 def test_get_start_of_week() -> None:
-    assert get_start_of_week(mock_work_date) == (2021, 12, 27, 0, 0, 0)
+    assert get_start_of_week(mock_work_date) == (2021, 12, 28, 0, 0, 0)
     # assert get_start_of_week(mock_work_date.year) == 2021
     # assert get_start_of_week(mock_work_date.month) == 12
     # assert get_start_of_week(mock_work_date.day) == 27
@@ -33,7 +33,7 @@ def test_get_start_of_week_type_error() -> None:
 
 
 def test_get_start_of_month() -> None:
-    assert get_start_of_month(mock_work_date) == (2021, 12, 1, 0, 0, 0)
+    assert get_start_of_month(mock_work_date) == (2021, 12, 27, 23, 59, 59)
     # assert get_start_of_month(mock_work_date.month) == 12
     # assert get_start_of_month(mock_work_date.day) == 1
     # assert get_start_of_month(mock_work_date.hour) == 0

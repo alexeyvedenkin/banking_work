@@ -22,7 +22,7 @@ load_dotenv()
 
 
 def get_work_datetime(work_datetime: str) -> Any:
-    work_datetime = '31.12.2021 23:59:59'
+    work_datetime = '27.12.2021 23:59:59'
     local_work_datetime = dt.dt_class(work_datetime)
     print('local_work_datetime', local_work_datetime)
     return local_work_datetime
