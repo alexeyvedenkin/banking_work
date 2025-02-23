@@ -1,7 +1,7 @@
 import datetime
 import os
 import pandas as pd
-from src import reports, services, utils, views
+from src import decorator, reports, services, utils, views
 from config import DATA_DIR, LOGS_DIR, RESULT_DIR
 import logging
 
@@ -21,25 +21,38 @@ df = pd.read_excel(operations_path)
 data = df.to_dict('records')
 
 print()
+logger.info("Выведено приветствие")
 print(utils.greeting())
-
-print('Результат работы страницы "События"')
 print()
+print('Результат работы страницы "События":')
+logger.info("Начало вывода результатов")
 print(*views.complete_result(), sep='\n')
 print()
+logger.info("Получен путь для выгрузки")
 views_path = os.path.join(RESULT_DIR, 'views.json')
-print(f'Результат записан в файл {str(views_path)}')
+logger.info("Результат выгружен в json-файл")
+print(f'Результат записан в файл results\\views.json')
+logger.info("Окончание работы страницы События")
 print()
-
+logger.info("Начало работы файла services.py")
 print('Результат работы функции find_people_pass (Переводы физическим лицам):')
 print()
 print('Формат результирующих данных (выведено первые 5 записей c переводами физическим лицам):')
+logger.info("Заголовок результата выведен в консоль")
 services.find_people_pass(data)
+logger.info("Получен путь для выгрузки")
 people_pass_path = os.path.join(RESULT_DIR, 'people_pass.json')
-print(f'Результат записан в файл {str(people_pass_path)}')
+logger.info("Результат выгружен в json-файл")
+print(f'Результат записан в файл results\\people_pass.json')
 print()
-
+logger.info("Окончание работы файла services.py")
 print()
+logger.info("Начало работы файла reports.py")
 print('Результат работы функции spending_by_weekday:')
 print()
+logger.info("Результат выведен в консоль")
 print(reports.spending_by_weekday(df, '31.03.2021 23:59:59'))
+logger.info("Запуск декоратора для выгрузки в JSON")
+decorator.create_series()
+logger.info("Результат выгружен в JSON")
+print('Результат работы функции записан в файл results/reports.json')

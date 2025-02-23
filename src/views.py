@@ -2,13 +2,9 @@ import datetime
 import json
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Dict
 from config import LOGS_DIR, DATA_DIR, RESULT_DIR
 import pandas as pd
-# import requests
-# from dotenv import load_dotenv
-# #
-# from pandas import DataFrame
 
 from src import utils
 
@@ -23,8 +19,9 @@ logger.addHandler(file_handler)
 
 
 operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
+logger.info("Задан путь для чтения файла с данными")
 df = pd.read_excel(operations_path)
-
+logger.info("Данные из файла .xslx преобразованы в DataFrame")
 # # Загрузка переменных окружения из .env файла
 # load_dotenv()
 #
@@ -117,7 +114,7 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'M') -> Dic
     # Объединяем платежи по категориям в итоговый датафрейм
     total_spending = pd.concat([top_7, others])
     print("Общая сумма платежей по категориям за период выборки:")
-    print(total_spending, type(total_spending))
+    print(total_spending)
     print()
 
     # Формируем словарь словарей для выгрузки в JSON
@@ -157,7 +154,7 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'M') -> Dic
 
     # Сортируем результат группировки по убыванию
     sorted_result_incomes = result_incomes.sort_values(ascending=False)
-    print(sorted_result_incomes, type(sorted_result_incomes))
+    print(sorted_result_incomes)
     print()
 
     # sorted_result_incomes_df = sorted_result_incomes.reset_index()

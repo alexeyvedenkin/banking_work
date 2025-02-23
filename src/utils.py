@@ -149,8 +149,8 @@ def get_names_of_currency_and_stocks(path: str) -> Any:
         utils_logger.info('Получение данных из исходного файла')
         data_json = json.load(file_json)
         utils_logger.info('Полученные данные преобразованы в объект Python')
-        print(data_json, end='\n')
-        print(type(data_json))
+        # print(data_json, end='\n')
+        # print(type(data_json))
     return data_json
 
 
@@ -162,7 +162,7 @@ def request_currency(user_currencies: dict) -> list[dict]:
     user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
     currency_list = get_names_of_currency_and_stocks(user_settings_path).get('user_currencies', 'Нет данных')
     utils_logger.info('Получены данные из исходного файла')
-    print(currency_list, type(currency_list))
+    # print(currency_list, type(currency_list))
     if "RUB" not in currency_list:
         utils_logger.debug('Проверено наличие "RUB" в исходном файле')
         utils_logger.debug('Присвоено значение apikey из для получения данных из .env')
@@ -171,7 +171,6 @@ def request_currency(user_currencies: dict) -> list[dict]:
             utils_logger.debug('Прочитан APIKEY')
         else:
             utils_logger.error('НЕ прочитан APIKEY')
-        print(apikey)
 
         if not apikey:
             print("Ошибка: API ключ не найден. Убедитесь, что он задан в .env файле.")
@@ -192,7 +191,7 @@ def request_currency(user_currencies: dict) -> list[dict]:
                     else:
                         currency_course['currency'] = value
             currency_rates.append(currency_course)
-
+        print(f'Курс валют на сегодня: {currency_rates}')
         return currency_rates
 
 
@@ -204,7 +203,7 @@ def stock_indices(user_currencies: dict) -> list[dict]:
     user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
     stock_list = get_names_of_currency_and_stocks(user_settings_path).get('user_stocks', 'Нет данных')
     utils_logger.info('Получены данные из исходного файла')
-    print(stock_list, type(stock_list))
+    # print(stock_list, type(stock_list))
     if "RUB" not in stock_list:
         utils_logger.debug('Проверено наличие "RUB" в исходном файле')
         utils_logger.debug('Присвоено значение apikey из для получения данных из .env')
@@ -213,7 +212,7 @@ def stock_indices(user_currencies: dict) -> list[dict]:
             utils_logger.debug('Прочитан APIKEY')
         else:
             utils_logger.error('НЕ прочитан APIKEY')
-        print(apikey)
+        # print(apikey)
 
         if not apikey:
             print("Ошибка: API ключ не найден. Убедитесь, что он задан в .env файле.")
@@ -235,7 +234,7 @@ def stock_indices(user_currencies: dict) -> list[dict]:
                     else:
                         stock_price['stock'] = value
             stock_prices.append(stock_price)
-
+        print(f'Котировки акций на сегодня: {stock_prices}')
         return stock_prices
 
 
@@ -251,6 +250,7 @@ def greeting(*args) -> Any:
         greet = 'Доброй ночи'
 
     print(f'Текущее время: {current_date_time}')
+    print()
 
     return f'{greet}, уважаемый пользователь!'
 
