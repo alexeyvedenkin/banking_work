@@ -2,17 +2,13 @@ import datetime as dt
 import json
 import logging
 import os
-from datetime import datetime as dt_class, timedelta
+from datetime import timedelta
 from typing import Any
 
-import pandas as pd
 import requests
-from dateutil.relativedelta import relativedelta
 from dotenv import load_dotenv
 
 from config import DATA_DIR, LOGS_DIR
-# from main import work_date
-
 
 utils_logger = logging.getLogger('utils')
 utils_logger.setLevel(logging.DEBUG)
@@ -23,25 +19,6 @@ file_handler.setFormatter(file_formatter)
 utils_logger.addHandler(file_handler)
 
 load_dotenv()
-#
-# excel_data = pd.read_excel("data.transactions_excel.xlsx")
-# print(excel_data.shape)
-# print(excel_data.head())
-
-
-# def read_csv(filename: str) -> list[Any] | Any:
-#     """
-#     Функция принимающая путь к файлу, считывает информацию c CSV файла
-#     """
-#     if not os.path.exists(filename):
-#         logger.error("Файл не найден")
-#         return []  # В случае ошибки возвращает пустой список
-#     logger.info("Начало загрузки CSV файла")
-#     with open(filename, encoding="utf-8") as file:
-#         reading_csv = csv.DictReader(file, delimiter=";")
-#         reading = [row for row in reading_csv]
-#         # logger.info("Окончание загрузки CSV файла")
-#         return reading
 
 
 def get_work_datetime(work_datetime: str) -> Any:
@@ -66,12 +43,6 @@ def read_excel(filename: str) -> Any:
     utils_logger.info("Окончание загрузки Excel файла")
 
     return transactions_list
-
-
-# def filter_by_date(my_lst: list[dict], start: str, stop: str) -> list[dict]:
-#     """Возвращает список словарей, отфильтрованный по дате
-#     """
-#     pass
 
 
 def days_translation() -> dict:
@@ -255,22 +226,7 @@ def greeting(*args) -> Any:
     return f'{greet}, уважаемый пользователь!'
 
 
-
-# def read_currency_and_stocks(path: str) -> Any:
-#     """Получает данные о курсах валют с API-ресурса и возвращает в формате dict{dict}
-#     """
-#     if not os.path.exists(path):
-#         utils_logger.error('Не задан путь к исходным данным')
-#         return []
-#     with open(path, encoding="utf-8") as file_json:
-#         utils_logger.info('Получение данных из исходного файла')
-#         data_json = json.load(file_json)
-#         utils_logger.info('Полученные данные преобразованы в объект Python')
-#         # print(*data_json, end='\n')
-#     return data_json
-
-
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # print(*read_csv("transactions.csv")[:5], sep='\n')
     # print()
     # operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
@@ -286,4 +242,4 @@ if __name__ == '__main__':
     # user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
     # # print(*stock_indices(user_settings_path), sep='\n')
     # print(*request_currency(user_settings_path), sep='\n')
-    print(greeting(dt.datetime.now()))
+    # print(greeting(dt.datetime.now()))

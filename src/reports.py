@@ -3,12 +3,11 @@ import logging
 import os
 from datetime import timedelta
 from typing import Optional
-import json
 
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
-from config import LOGS_DIR, DATA_DIR, RESULT_DIR
+from config import DATA_DIR, LOGS_DIR
 from utils import days_translation
 
 logger = logging.getLogger("reports")
@@ -20,26 +19,6 @@ file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
 
-# def spending_by_category(transactions: pd.DataFrame,
-#                          category: str,
-#                          date: Optional[str] = None) -> pd.DataFrame:
-#     """Возвращает траты по заданной категории за последние три месяца (от переданной даты)
-#     """
-#     pass
-
-# def dumping_to_json(spending_by_weekday):
-#     def wrapper(*args, **kwargs):
-#         print('Подготовка к выгрузке отчета')
-#         reports_path = os.path.join(RESULT_DIR, 'reports.json')
-#         result = spending_by_weekday(*args, **kwargs)
-#         print(result, type(result))
-#         with open(reports_path, 'w', encoding='utf-8') as json_file:
-#             json.dump(result, json_file, indent=4, ensure_ascii=False)
-#         print('Отчет выгружен в файл results/reports.json')
-#         return result
-#     return wrapper
-#
-# @dumping_to_json
 def spending_by_weekday(transactions: pd.DataFrame,
                         date: Optional[str] = None) -> pd.DataFrame:
     """Возвращает средние траты в каждый из дней недели за последние три месяца (от переданной даты)
@@ -83,13 +62,6 @@ def spending_by_weekday(transactions: pd.DataFrame,
     # spend_by_weekday_dict = spend_by_weekday.to_dict
 
     return spend_by_weekday
-
-
-# def spending_by_workday(transactions: pd.DataFrame,
-#                         date: Optional[str] = None) -> pd.DataFrame:
-#     """Выводит средние траты в рабочий и в выходной день за последние три месяца (от переданной даты)
-#     """
-#     pass
 
 
 if __name__ == '__main__':
