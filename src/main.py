@@ -22,8 +22,16 @@ data = df.to_dict('records')
 
 print()
 print(utils.greeting())
+
+print('Результат работы страницы "События"')
 print()
-print('Результат работы функции find_people_pass:')
+print(*views.complete_result(), sep='\n')
+print()
+views_path = os.path.join(RESULT_DIR, 'views.json')
+print(f'Результат записан в файл {str(views_path)}')
+print()
+
+print('Результат работы функции find_people_pass (Переводы физическим лицам):')
 print()
 print('Формат результирующих данных (выведено первые 5 записей c переводами физическим лицам):')
 services.find_people_pass(data)

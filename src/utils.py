@@ -175,7 +175,7 @@ def request_currency(user_currencies: dict) -> list[dict]:
 
         if not apikey:
             print("Ошибка: API ключ не найден. Убедитесь, что он задан в .env файле.")
-            return 0.0
+            return []
 
         headers = {"apikey": f"{apikey}"}
 
@@ -217,7 +217,7 @@ def stock_indices(user_currencies: dict) -> list[dict]:
 
         if not apikey:
             print("Ошибка: API ключ не найден. Убедитесь, что он задан в .env файле.")
-            return 0.0
+            return []
 
         headers = {"apikey": f"{apikey}"}
 
@@ -241,16 +241,17 @@ def stock_indices(user_currencies: dict) -> list[dict]:
 
 def greeting(*args) -> Any:
     current_date_time = dt.datetime.now()
-    if 6 <= current_date_time.hour < 12:
+    if 5 <= current_date_time.hour < 11:
         greet = 'Доброе утро'
-    elif 12 <= current_date_time.hour < 18:
+    elif 11 <= current_date_time.hour < 17:
         greet = 'Добрый день'
-    elif 18 <= current_date_time.hour < 24:
+    elif 17 <= current_date_time.hour < 23:
         greet = 'Добрый вечер'
     else:
         greet = 'Доброй ночи'
 
-    print(current_date_time)
+    print(f'Текущее время: {current_date_time}')
+
     return f'{greet}, уважаемый пользователь!'
 
 

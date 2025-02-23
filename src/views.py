@@ -21,6 +21,10 @@ file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s: %(me
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
+
+operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
+df = pd.read_excel(operations_path)
+
 # # Загрузка переменных окружения из .env файла
 # load_dotenv()
 #
@@ -40,7 +44,7 @@ logger.addHandler(file_handler)
 #     pass
 
 
-def transactions_by_period(df, work_date: str, type_of_period: str = 'W') -> Dict:
+def transactions_by_period(df, work_date: str, type_of_period: str = 'M') -> Dict:
     """Возвращает общую сумму расходов за период
     """
     total_result = {}
@@ -76,21 +80,21 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'W') -> Dic
     # Определяем сумму расходов по категориям в заданном периоде, округляем сумму до целого числа
     result_spending = (
         grouped_by_categories_spending['Сумма операции'].apply(lambda x: x[x < 0].abs().sum().astype(int)))
-    print(result_spending, type(result_spending))
-    print()
+    # print(result_spending, type(result_spending))
+    # print()
 
     # transfers_and_cash = result_spending[result_spending.loc in ['Переводы', 'Наличные']]
     # print(transfers_and_cash)
 
     # Сумма по категории "Переводы":
     total_transfers = int(result_spending['Переводы'])
-    print('total_transfers:', total_transfers)
-    print()
+    # print('total_transfers:', total_transfers)
+    # print()
 
     # Сумма по категории "Наличные":
     total_cash = int(result_spending['Наличные']) if 'Наличные' in result_spending.index else 0
-    print('total_cash:', total_cash)
-    print()
+    # print('total_cash:', total_cash)
+    # print()
 
     # Формируем список словарей для выгрузки в JSON-файл
     transfers_and_cash = []
@@ -98,8 +102,8 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'W') -> Dic
     transfers_and_cash.append(transfers)
     cash = {'category': 'Наличные', 'amount': total_cash}
     transfers_and_cash.append(cash)
-    print(transfers_and_cash)
-    print()
+    # print(transfers_and_cash)
+    # print()
 
     # Сортируем результат группировки по убыванию
     sorted_result_spending = result_spending.sort_values(ascending=False)
@@ -112,6 +116,7 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'W') -> Dic
 
     # Объединяем платежи по категориям в итоговый датафрейм
     total_spending = pd.concat([top_7, others])
+    print("Общая сумма платежей по категориям за период выборки:")
     print(total_spending, type(total_spending))
     print()
 
@@ -166,7 +171,7 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'W') -> Dic
         incomes_result.append({'category': category, 'amount': amount})
 
     main_income['main'] = incomes_result
-    print(main_income, type(main_income))
+    # print(main_income, type(main_income))
 
     # main_incomes = sorted_result_incomes_df.set_index('index').to_dict(orient='index')
     # print(main_incomes)
@@ -178,9 +183,7 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'W') -> Dic
     expenses_dict['transfers_and_cash'] = transfers_and_cash
     total_result['expenses'] = expenses_dict
     total_result['income'] = main_income
-    print(total_result)
-
-
+    # print(total_result)
 
     return total_result  # result_incomes
 
@@ -251,9 +254,9 @@ def complete_result(*args, **kwargs):
     # # return amount
 
 
-if __name__ == '__main__':
-    print(utils.greeting())
-    operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
-    df = pd.read_excel(operations_path)
-    # print(transactions_by_period(df, '31.12.2021 23:59:59', 'Y'))
-    print(*complete_result(), sep='\n')
+# if __name__ == '__main__':
+    # print(utils.greeting())
+    # operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
+    # df = pd.read_excel(operations_path)
+    # # print(transactions_by_period(df, '31.12.2021 23:59:59', 'Y'))
+    # print(*complete_result(), sep='\n')
