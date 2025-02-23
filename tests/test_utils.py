@@ -1,17 +1,21 @@
 import datetime
-from datetime import datetime, timedelta
+from datetime import datetime as dt, timedelta
 from unittest.mock import patch
 
 import pytest
 
 from src.reports import spending_by_weekday
 from src.utils import (days_translation, get_start_for_period, get_start_of_month, get_start_of_week,
-                       get_start_of_year, get_start_without_period, get_work_datetime)
+                       get_start_of_year, get_start_without_period)
 
-with patch(str(get_work_datetime)) as mock_work_date:
-    mock_work_date.return_value = datetime(2021, 12, 27, 23, 59, 59, 0)
+with patch(str()) as mock_work_date:
+    mock_work_date.return_value = datetime(2021, 12, 27, 23, 59, 59)
 
 print(mock_work_date.return_value, type(mock_work_date.return_value))
+
+
+# def test_get_work_datetime() -> None:
+#     assert
 
 
 def test_days_translation() -> None:
@@ -33,14 +37,22 @@ def test_get_start_of_week_type_error() -> None:
         get_start_of_week(datetime.datetime('%ab %cd %ef %gh %hg %fe'))
 
 
-def test_get_start_of_month() -> None:
-    assert get_start_of_month(mock_work_date) == (2021, 12, 27, 23, 59, 59)
-    # assert get_start_of_month(mock_work_date.month) == 12
-    # assert get_start_of_month(mock_work_date.day) == 1
-    # assert get_start_of_month(mock_work_date.hour) == 0
-    # assert get_start_of_month(mock_work_date.minute) == 0
-    # assert get_start_of_month(mock_work_date.second) == 0
-
+# def test_get_start_of_month() -> None:
+#     assert get_start_of_month(mock_work_date) == (2021, 12, 27, 23, 59, 59)
+#     # assert get_start_of_month(mock_work_date.month) == 12
+#     # assert get_start_of_month(mock_work_date.day) == 1
+#     # assert get_start_of_month(mock_work_date.hour) == 0
+#     # assert get_start_of_month(mock_work_date.minute) == 0
+#     # assert get_start_of_month(mock_work_date.second) == 0
+def test_get_start_of_month():
+    # Arrange
+    work_date = dt(2022, 9, 15, 10, 30, 0)
+    expected_start_of_month = dt(2022, 9, 1, 0, 0, 0)
+    # Act
+    start_of_month = get_start_of_month(work_date)
+    print(start_of_month, get_start_of_month(work_date))
+    # Assert
+    assert start_of_month == expected_start_of_month
 
 def test_get_start_of_year() -> None:
     assert get_start_of_year(mock_work_date) == (2021, 1, 1, 0, 0, 0)

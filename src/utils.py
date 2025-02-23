@@ -2,7 +2,7 @@ import datetime as dt
 import json
 import logging
 import os
-from datetime import timedelta
+from datetime import datetime as dt_class, timedelta
 from typing import Any
 
 import requests
@@ -21,11 +21,11 @@ utils_logger.addHandler(file_handler)
 load_dotenv()
 
 
-def get_work_datetime(work_datetime: str) -> Any:
-    work_datetime = '27.12.2021 23:59:59'
-    local_work_datetime = dt.dt_class(work_datetime)
-    print('local_work_datetime', local_work_datetime)
-    return local_work_datetime
+# def get_work_datetime(work_datetime: str) -> Any:
+#     work_datetime = '27.12.2021 23:59:59'
+#     local_work_datetime = dt.dt_class(work_datetime)
+#     print('local_work_datetime', local_work_datetime)
+#     return local_work_datetime
 
 
 def read_excel(filename: str) -> Any:
@@ -243,3 +243,4 @@ def greeting(*args) -> Any:
     # # print(*stock_indices(user_settings_path), sep='\n')
     # print(*request_currency(user_settings_path), sep='\n')
     # print(greeting(dt.datetime.now()))
+    print(get_work_datetime('27.12.2021 23:59:59'))
