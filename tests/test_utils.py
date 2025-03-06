@@ -2,9 +2,12 @@ from datetime import datetime
 from unittest.mock import Mock, patch
 from typing import Any
 import unittest
+import os
+import json
 
 import pytest
 
+from config import DATA_DIR
 from src.utils import (get_start_for_period, get_start_of_month, get_start_of_week, get_start_of_year,
                        get_start_without_period, greeting, request_currency, stock_indices)
 
@@ -34,7 +37,8 @@ def test_get_start_of_year(test_date) -> None:
 
 
 def test_get_start_without_period(test_date) -> None:
-    expected = datetime(1971, 1, 1, 0, 0, 0)
+    test_date = datetime(1971,1,1)
+    expected = datetime(1971, 1, 1)
     assert get_start_without_period(test_date) == expected
 
 
@@ -62,21 +66,50 @@ def test_greeting(datetime_mocked) -> None:
 
 @patch('requests.get')
 def test_request_currency(mock_get: Any) -> None:
-    # mock_get.currency_list[0].return_value = ["USD"]
+    # Создание тестовых данных
+    test_data = {
+        "user_currencies": ["USD"],
+        "user_stocks": ["AAPL"]
+    }
+    # Создаем тестовый JSON-файл
+    file_path = os.path.join(DATA_DIR,'test_dict')
+    with open(file_path, 'w') as f:
+        json.dump(test_data, f)
+    # Чтение данных из временного JSON-файла
+    with open(file_path, 'r') as f:
+        loaded_data = json.load(f)
+    assert loaded_data == test_data, "Данные не совпадают"
+    mock_get.currency_list[0].return_value = ["USD"]
     mock_response = unittest.mock.Mock()
     mock_response.status_code = 200
     mock_response.json.return_value = {"base_code": "USD", "conversion_rate": 100.05}
     mock_get.return_value = mock_response
-    expected = [{"currency": "USD", "rate": 100.05}, {"currency": "EUR", "rate": 100.05}]
-    assert request_currency('example.json') == expected
-
+    expected = [{"currency": "USD", "rate": 100.05}]
+    assert request_currency(file_path) == expected
+    # Удаление временного файла
+    os.remove(file_path)
 
 @patch('requests.get')
 def test_stock_indices(mock_get: Any) -> None:
-    # mock_get.currency_list[0].return_value = ["USD"]
+    # Создание тестовых данных
+    test_data = {
+        "user_currencies": ["USD"],
+        "user_stocks": ["AAPL"]
+    }
+    # Создаем тестовый JSON-файл
+    file_path = os.path.join(DATA_DIR, 'test_dict')
+    with open(file_path, 'w') as f:
+        json.dump(test_data, f)
+    # Чтение данных из временного JSON-файла
+    with open(file_path, 'r') as f:
+        loaded_data = json.load(f)
+    assert loaded_data == test_data, "Данные не совпадают"
+    mock_get.stock_indices[0].return_value = ["AAPL"]
     mock_response = unittest.mock.Mock()
     mock_response.status_code = 200
     mock_response.json.return_value = {"symbol": "AAPL", "close": 247.04}
     mock_get.return_value = mock_response
     expected = [{"stock": "AAPL", "price": 247.04}]
-    assert stock_indices('test_stocks_json') == expected
+    assert stock_indices(file_path) == expected
+    # Удаление временного файла
+    os.remove(file_path)

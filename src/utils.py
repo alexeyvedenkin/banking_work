@@ -94,11 +94,10 @@ def get_start_of_year(work_date: datetime) -> Any:
 
 
 def get_start_without_period(work_date: datetime) -> Any:
-    # Определяем дату начала отбора # 0001-01-01
-    work_date.year = 1971
+    # Определяем дату начала отбора # 1971-01-01
     start_of_all = datetime.datetime(1971, 1, 1)
     # Устанавливаем время начала отбора на 00:00:00
-    start_of_all = start_of_all.replace(hour=0, minute=0, second=0, microsecond=0)
+    # start_of_all = start_of_all.replace(hour=0, minute=0, second=0, microsecond=0)
     return start_of_all
 
 
