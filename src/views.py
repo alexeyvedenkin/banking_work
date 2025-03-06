@@ -171,8 +171,8 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'M') -> Dic
     return total_result  # result_incomes
 
 
-def complete_result(*args, **kwargs):
-    final_result = transactions_by_period(df, work_date='31.12.2021 23:59:59')
+def complete_result(df, work_date: str, type_of_period: str = 'M'):
+    final_result = transactions_by_period(df, work_date, type_of_period)
     user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
     curr_data = utils.request_currency(user_settings_path)
     stock_data = utils.stock_indices(user_settings_path)
