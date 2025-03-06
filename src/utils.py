@@ -95,16 +95,34 @@ def get_start_of_year(work_date: datetime) -> Any:
 
 def get_start_without_period(work_date: datetime) -> Any:
     # Определяем дату начала отбора # 0001-01-01
+    work_date.year = 1971
     start_of_all = datetime.datetime(1971, 1, 1)
     # Устанавливаем время начала отбора на 00:00:00
     start_of_all = start_of_all.replace(hour=0, minute=0, second=0, microsecond=0)
     return start_of_all
 
 
-def get_names_of_currency_and_stocks(path='user_settings.json') -> Any:
-    """ Получает данные из внешнего JSON-файла и преобразовывает в объект Python
+# def get_names_of_currency_and_stocks(filename: str='user_settings.json') -> Any:
+#     """ Получает данные из внешнего JSON-файла и преобразовывает в объект Python
+#     """
+#     path = os.path.join(DATA_DIR, filename)
+#     utils_logger.debug('Получение пути к файлу с данными')
+#     if not os.path.exists(path):
+#         utils_logger.error('Не задан путь к исходным данным')
+#         print('Не задан путь')
+#         return []
+#     with open(path, encoding="utf-8") as file_json:
+#         utils_logger.info('Получение данных из исходного файла')
+#         data_json = json.load(file_json)
+#         utils_logger.info('Полученные данные преобразованы в объект Python')
+#     return data_json
+
+
+def request_currency(filename: str='user_settings.json') -> list[dict]:
+    """Запрашивает на API-сервисе курсы валют, заданных пользователем, и возвращает результат запроса
     """
-    path = os.path.join(DATA_DIR, 'user_settings.json')
+    utils_logger.info('Получение данных из исходного файла')
+    path = os.path.join(DATA_DIR, filename)
     utils_logger.debug('Получение пути к файлу с данными')
     if not os.path.exists(path):
         utils_logger.error('Не задан путь к исходным данным')
@@ -114,17 +132,8 @@ def get_names_of_currency_and_stocks(path='user_settings.json') -> Any:
         utils_logger.info('Получение данных из исходного файла')
         data_json = json.load(file_json)
         utils_logger.info('Полученные данные преобразованы в объект Python')
-    return data_json
-
-
-def request_currency(user_settings_path: str) -> list[dict]:
-    """Запрашивает на API-сервисе курсы валют, заданных
-    пользователем и возвращает результат запроса
-    """
-    utils_logger.info('Получение данных из исходного файла')
-    currency_list = get_names_of_currency_and_stocks(user_settings_path).get('user_currencies', 'Нет данных')
+    currency_list = data_json.get('user_currencies', 'Нет данных')
     utils_logger.info('Получены данные из исходного файла')
-
     utils_logger.debug('Присвоено значение apikey из для получения данных из .env')
     apikey = os.getenv('APIKEY_EXCHANGERATE')
     if not apikey:
@@ -150,12 +159,21 @@ def request_currency(user_settings_path: str) -> list[dict]:
     return currency_rates
 
 
-def stock_indices(user_stocks: str) -> list[dict]:
-    """Запрашивает на API-сервисе курсы акций, заданных
-    пользователем, и возвращает результат запроса
+def stock_indices(filename: str) -> list[dict]:
+    """Запрашивает на API-сервисе курсы акций, заданных пользователем, и возвращает результат запроса
     """
     utils_logger.info('Получение данных из исходного файла')
-    stock_list = get_names_of_currency_and_stocks(user_stocks).get('user_stocks', 'Нет данных')
+    path = os.path.join(DATA_DIR, filename)
+    utils_logger.debug('Получение пути к файлу с данными')
+    if not os.path.exists(path):
+        utils_logger.error('Не задан путь к исходным данным')
+        print('Не задан путь')
+        return []
+    with open(path, encoding="utf-8") as file_json:
+        utils_logger.info('Получение данных из исходного файла')
+        data_json = json.load(file_json)
+        utils_logger.info('Полученные данные преобразованы в объект Python')
+    stock_list = data_json.get('user_stocks', 'Нет данных')
     utils_logger.info('Получены данные из исходного файла')
     utils_logger.debug('Присвоено значение apikey из для получения данных из .env')
     apikey = os.getenv('APIKEY_TWELVEDATA_STOCK')
@@ -217,6 +235,6 @@ if __name__ == '__main__':
     # print(get_names_of_currency_and_stocks('user_settings.json'))
     user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
     print(*stock_indices(user_settings_path), sep='\n')
-    # print(*request_currency(user_settings_path), sep='\n')
+    print(*request_currency(user_settings_path), sep='\n')
     # print(greeting(dt.datetime.now()))
     # print(get_start_of_week(datetime.datetime.strptime('31.03.2021 23:59:59', "%d.%m.%Y %H:%M:%S")))
