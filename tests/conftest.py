@@ -1,5 +1,4 @@
 import pytest
-import datetime
 from datetime import datetime
 from src import utils
 
@@ -31,14 +30,14 @@ def test_stocks_json() -> list[str]:
     return test_stocks_json
 
 
-# @pytest.fixture
-# def test_days_translation():
-#     return {
-#         'Monday': 'Понедельник',
-#         'Tuesday': 'Вторник',
-#         'Wednesday': 'Среда',
-#         'Thursday': 'Четверг',
-#         'Friday': 'Пятница',
-#         'Saturday': 'Суббота',
-#         'Sunday': 'Воскресенье'
-#     }
+@pytest.fixture
+def test_days_translation():
+    return {
+        'Monday': 'Понедельник',
+        'Tuesday': 'Вторник',
+        'Wednesday': 'Среда',
+        'Thursday': 'Четверг',
+        'Friday': 'Пятница',
+        'Saturday': 'Суббота',
+        'Sunday': 'Воскресенье'
+    }

@@ -14,7 +14,7 @@ file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
 
-work_date = "18.02.2025 22:54:00"
+work_date = "31.03.2021 23:59:59"
 now_date = datetime.datetime.now()
 operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
 df = pd.read_excel(operations_path)
@@ -22,7 +22,7 @@ data = df.to_dict('records')
 
 print()
 logger.info("Выведено приветствие")
-print(utils.greeting())
+# print(utils.greeting())
 print()
 print('Результат работы страницы "События":')
 logger.info("Начало вывода результатов")
