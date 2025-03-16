@@ -1,16 +1,18 @@
 import json
 import os
-import pytest
 import unittest
 from datetime import datetime
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+
+import pytest
+from requests import HTTPError
 
 from config import DATA_DIR
 from src.utils import days_translation, get_start_for_period, request_currency, stock_indices
 
 
-def test_days_translation():
+def test_days_translation() -> None:
     # Вызов функции
     days_dict = days_translation()
 
@@ -33,12 +35,13 @@ def test_days_translation():
     ("15.02.2025 10:00:00", 'Y', "01.01.2025 00:00:00"),
     ("15.02.2025 10:00:00", 'ALL', "01.01.1971 00:00:00"),
 ])
-def test_get_start_for_period(work_date, type_of_period, expected_start):
+def test_get_start_for_period(work_date: str, type_of_period: str, expected_start: str) -> None:
     start = get_start_for_period(work_date, type_of_period)
     expected_start_datetime = datetime.strptime(expected_start, "%d.%m.%Y %H:%M:%S")
     assert start == expected_start_datetime
 
-def test_get_start_for_period_invalid_type_of_period():
+
+def test_get_start_for_period_invalid_type_of_period() -> None:
     with pytest.raises(ValueError):
         get_start_for_period("15.09.2024 10:00:00", 'Некорректный тип периода')
 
@@ -73,6 +76,32 @@ def test_request_currency(mock_get: Any) -> None:
     assert request_currency(file_path) == expected
     # Удаление временного файла
     os.remove(file_path)
+
+
+# def test_request_currency_file_not_found():
+#     with pytest.raises(FileNotFoundError):
+#         request_currency('non_existent_file.json')
+#
+#
+# def test_request_currency_file_not_found_logging(caplog):
+#     request_currency('non_existent_file.json')
+#     assert "Не задан путь к исходным данным" in caplog.text
+
+
+def test_request_currency_api_key_not_found() -> None:
+    os.environ['APIKEY_EXCHANGERATE'] = ''
+    result = request_currency()
+    assert result == []
+
+
+# def test_request_currency_http_error():
+#     os.environ['APIKEY_EXCHANGERATE'] = 'test_api_key'
+#     with patch('requests.get') as mock_get:
+#         mock_response = MagicMock()
+#         mock_response.raise_for_status.side_effect = Exception('HTTPError')
+#         mock_get.return_value = mock_response
+#         result = request_currency()
+#         assert result == []
 
 
 @patch('requests.get')

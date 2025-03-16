@@ -2,12 +2,14 @@ import datetime
 import json
 import logging
 import os
+from pandas import DataFrame
 from typing import Dict
-from config import LOGS_DIR, DATA_DIR, RESULT_DIR
+
 import pandas as pd
 
+from config import DATA_DIR, LOGS_DIR, RESULT_DIR
 from src import utils
-
+from typing import Any
 
 logger = logging.getLogger("views")
 logger.setLevel(logging.DEBUG)
@@ -41,7 +43,7 @@ logger.info("Данные из файла .xslx преобразованы в Da
 #     pass
 
 
-def transactions_by_period(df, work_date: str, type_of_period: str = 'M') -> Dict:
+def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: str = 'M') -> Dict:
     """Возвращает общую сумму расходов за период
     """
     total_result = {}
@@ -146,7 +148,7 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'M') -> Dic
     # sorted_result_incomes_df = sorted_result_incomes.reset_index()
 
     # Формируем словарь словарей для выгрузки в JSON-файл
-    main_income = {}
+    main_income: Any = {}
     main_income['total_amount'] = total_incomes
     incomes_result = []
     incomes_by_category = sorted_result_incomes.to_dict()
@@ -166,12 +168,11 @@ def transactions_by_period(df, work_date: str, type_of_period: str = 'M') -> Dic
     expenses_dict['transfers_and_cash'] = transfers_and_cash
     total_result['expenses'] = expenses_dict
     total_result['income'] = main_income
-    # print(total_result)
 
     return total_result  # result_incomes
 
 
-def complete_result(df, work_date: str, type_of_period: str = 'M'):
+def complete_result(df: DataFrame, work_date: str, type_of_period: str = 'M') -> Any:
     final_result = transactions_by_period(df, work_date, type_of_period)
     user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
     curr_data = utils.request_currency(user_settings_path)

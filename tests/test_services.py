@@ -1,6 +1,4 @@
-import pytest
 from src.services import find_people_pass
-
 
 my_lst_dict = [
     {

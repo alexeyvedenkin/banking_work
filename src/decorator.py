@@ -5,7 +5,7 @@ from functools import wraps
 import pandas as pd
 
 from config import LOGS_DIR, RESULT_DIR
-
+from typing import Any
 
 logger = logging.getLogger("decorator")
 logger.setLevel(logging.DEBUG)
@@ -16,10 +16,10 @@ file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
 
-def to_json_file(filename='reports.json'):
-    def decorator(func):
+def to_json_file(filename:str = 'reports.json') -> Any:
+    def decorator(func: Any) -> Any:
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             logger.info('Результат работы функции записан в переменную result')
             result: pd.DataFrame = func(*args, **kwargs)
 

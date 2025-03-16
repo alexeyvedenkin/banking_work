@@ -1,6 +1,7 @@
-import pytest
+import json
 from datetime import datetime
-from src import utils
+from typing import Any
+import pytest
 
 
 @pytest.fixture
@@ -31,7 +32,7 @@ def test_stocks_json() -> list[str]:
 
 
 @pytest.fixture
-def test_days_translation():
+def test_days_translation() -> dict:
     return {
         'Monday': 'Понедельник',
         'Tuesday': 'Вторник',
@@ -41,3 +42,13 @@ def test_days_translation():
         'Saturday': 'Суббота',
         'Sunday': 'Воскресенье'
     }
+
+
+# Тестовый JSON-файл
+@pytest.fixture
+def test_json_file(tmp_path: Any) -> Any:
+    data = {'user_currencies': ['USD', 'EUR']}
+    file_path = tmp_path / 'user_settings.json'
+    with open(file_path, 'w', encoding='utf-8') as file:
+        json.dump(data, file)
+    return file_path

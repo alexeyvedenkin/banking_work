@@ -2,8 +2,7 @@
 import json
 import logging
 import os
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any
 
 import requests
@@ -231,7 +230,7 @@ def stock_indices(filename: str) -> list[dict]:
 #     return f'{greet}, уважаемый пользователь!'
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # print(*read_csv("transactions.csv")[:5], sep='\n')
     # print()
     # operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
@@ -239,10 +238,10 @@ if __name__ == '__main__':
     # print(pd.read_excel(operations_path)[:5], sep='\n')
     # df = pd.read_excel('operations.xlsx', usecols=[0, 4, 9, 11])
     # print(df[:20])
-    print(get_start_for_period('18.02.2025 22:54:00', 'W'))
-    print(get_start_for_period('18.02.2025 22:54:00', 'M'))
-    print(get_start_for_period('18.02.2025 22:54:00', 'Y'))
-    print(get_start_for_period('18.02.2025 22:54:00', 'ALL'))
+    # print(get_start_for_period('18.02.2025 22:54:00', 'W'))
+    # print(get_start_for_period('18.02.2025 22:54:00', 'M'))
+    # print(get_start_for_period('18.02.2025 22:54:00', 'Y'))
+    # print(get_start_for_period('18.02.2025 22:54:00', 'ALL'))
     # print(get_names_of_currency_and_stocks('user_settings.json'))
     # user_settings_path = os.path.join(DATA_DIR, 'user_settings.json')
     # print(*stock_indices(user_settings_path), sep='\n')

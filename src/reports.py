@@ -2,14 +2,13 @@ import datetime
 import logging
 import os
 from datetime import timedelta
-from typing import Optional
-
+from typing import Any, Optional
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 from config import DATA_DIR, LOGS_DIR
-from src.utils import days_translation
 from src.decorator import to_json_file
+from src.utils import days_translation
 
 logger = logging.getLogger("reports")
 logger.setLevel(logging.DEBUG)
@@ -22,7 +21,7 @@ logger.addHandler(file_handler)
 
 @to_json_file('my_report.json')
 def spending_by_weekday(transactions: pd.DataFrame,
-                        date: Optional[str] = None) -> pd.DataFrame:
+                        date: Optional[str] = None) -> Any:
     """Возвращает средние траты в каждый из дней недели за последние три месяца (от переданной даты)
     """
 
