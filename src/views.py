@@ -47,7 +47,7 @@ def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: s
 
     # Определяем общую сумму платежей за период
     total_payments = (
-        int(filtered_df_for_spending['Сумма операции'].apply(lambda x: abs(x) if x < 0 else 0).sum().astype(int)))
+        int(filtered_df_for_spending['Сумма операции'].apply(lambda x: abs(x) if x < 0 else 0).sum()))
     print(f'Общая сумма платежей за период выборки: {total_payments} руб.')
     print()
 
@@ -60,13 +60,9 @@ def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: s
 
     # Сумма по категории "Переводы":
     total_transfers = int(result_spending['Переводы']) if 'Переводы' in result_spending.index else 0
-    # print('total_transfers:', total_transfers)
-    # print()
 
     # Сумма по категории "Наличные":
     total_cash = int(result_spending['Наличные']) if 'Наличные' in result_spending.index else 0
-    # print('total_cash:', total_cash)
-    # print()
 
     # Формируем список словарей для выгрузки в JSON-файл
     transfers_and_cash = []
@@ -74,8 +70,6 @@ def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: s
     transfers_and_cash.append(transfers)
     cash = {'category': 'Наличные', 'amount': total_cash}
     transfers_and_cash.append(cash)
-    # print(transfers_and_cash)
-    # print()
 
     # Сортируем результат группировки по убыванию
     sorted_result_spending = result_spending.sort_values(ascending=False)
@@ -103,7 +97,7 @@ def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: s
                                  & (df['Сумма операции'] > 0)]
 
     # Определяем общую сумму поступлений за период
-    total_incomes = int(filtered_df_for_incomes['Сумма операции'].apply(lambda x: x if x > 0 else 0).sum().astype(int))
+    total_incomes = int(filtered_df_for_incomes['Сумма операции'].apply(lambda x: x if x > 0 else 0).sum())
     print(f'Общая сумма поступлений за период выборки: {total_incomes}')
     print()
 
@@ -119,7 +113,7 @@ def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: s
     print()
 
     # Формируем словарь словарей для выгрузки в JSON-файл
-    main_income: Any = {}
+    main_income: dict = {}
     main_income['total_amount'] = total_incomes
     incomes_result = []
     incomes_by_category = sorted_result_incomes.to_dict()

@@ -1,4 +1,6 @@
 import json
+import os
+import pandas as pd
 from datetime import datetime
 from typing import Any
 
@@ -52,3 +54,25 @@ def test_test_json_file(test_json_file: Any) -> None:
 
     # Проверяем, что файл существует
     assert test_json_file.exists()
+
+
+def test_df_fixture(df):
+    # Проверка того, что фикстура возвращает DataFrame
+    assert isinstance(df, pd.DataFrame)
+
+    # Проверка содержимого DataFrame
+    assert df.shape == (3, 2)  # 3 строки, 2 столбца
+    assert df.columns.tolist() == ['transaction', 'date']
+    assert df['transaction'].tolist() == [1, 2, 3]
+    assert df['date'].tolist() == ['2022-01-01', '2022-01-02', '2022-01-03']
+
+
+def test_user_settings_path(user_settings_path):
+    # Проверка существования файла
+    assert os.path.exists(user_settings_path)
+
+    # Проверка содержимого файла
+    with open(user_settings_path, 'r') as file:
+        data = json.load(file)
+        assert data['currency'] == 'USD'
+        assert data['stock'] == 'NASDAQ'

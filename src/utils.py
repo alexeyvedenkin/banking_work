@@ -46,17 +46,13 @@ def get_start_for_period(work_date: str, type_of_period: str) -> Any:
         offset = (work_datetime.weekday() - 0) % 7
         work_datetime = work_datetime - timedelta(days=offset)
         return work_datetime.replace(hour=0, minute=0, second=0)
-        # return work_datetime.replace(day=1, hour=0, minute=0, second=0)
     elif type_of_period == 'M':
         # Определяем дату начала месяца
-        # start_by_period = get_start_of_month(work_datetime)
         return work_datetime.replace(day=1, hour=0, minute=0, second=0)
     elif type_of_period == 'Y':
         # Определяем дату начала года
-        # start_by_period = get_start_of_year(work_datetime)
         return work_datetime.replace(month=1, day=1, hour=0, minute=0, second=0)
     elif type_of_period == 'ALL':
-        # start_by_period = get_start_without_period(work_datetime)
         return datetime(1971, 1, 1, 0, 0, 0)
     else:
         raise ValueError("Некорректно задана дата")

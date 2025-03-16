@@ -2,6 +2,8 @@ import json
 from datetime import datetime
 from typing import Any
 
+import os
+import pandas as pd
 import pytest
 
 
@@ -62,3 +64,32 @@ def test_transactions() -> Any:
         {'Категория': 'Зарплата', 'Описание': 'Зарплата за март'},
         {'Категория': 'Переводы', 'Описание': 'Петров П.'}
         ]
+
+
+@pytest.fixture
+def df():
+    data = {'transaction': [1, 2, 3], 'date': ['2022-01-01', '2022-01-02', '2022-01-03']}
+    return pd.DataFrame(data)
+
+
+@pytest.fixture
+def user_settings_path():
+    # Создание тестового файла user_settings.json
+    path = 'test_user_settings.json'
+    with open(path, 'w') as file:
+        json.dump({'currency': 'USD', 'stock': 'NASDAQ'}, file)
+    yield path
+    # Удаление тестового файла после теста
+    os.remove(path)
+
+
+@pytest.fixture
+def test_data():
+    data = {
+        'Дата операции': ['01.01.2022', '02.01.2022', '03.01.2022'],
+        'Сумма операции': [-100, 200, -50],
+        'Категория': ['Переводы', 'Наличные', 'Переводы']
+    }
+    df = pd.DataFrame(data)
+    df['Дата операции'] = pd.to_datetime(df['Дата операции'], dayfirst=True)
+    return df
