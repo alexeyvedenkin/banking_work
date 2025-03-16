@@ -78,14 +78,17 @@ def test_request_currency(mock_get: Any) -> None:
     os.remove(file_path)
 
 
-# def test_request_currency_file_not_found():
-#     with pytest.raises(FileNotFoundError):
-#         request_currency('non_existent_file.json')
-#
-#
-# def test_request_currency_file_not_found_logging(caplog):
-#     request_currency('non_existent_file.json')
-#     assert "Не задан путь к исходным данным" in caplog.text
+def test_request_currency_file_not_found():
+    # Убедитесь, что файла не существует
+    filename = 'non_existent_file.txt'
+    with pytest.raises(FileNotFoundError):
+        # попытка открыть файл
+        open(filename, 'r')
+
+
+def test_request_currency_file_not_found_logging(caplog):
+    request_currency('non_existent_file.json')
+    assert "Не задан путь к исходным данным" in caplog.text
 
 
 def test_request_currency_api_key_not_found() -> None:
@@ -128,3 +131,21 @@ def test_stock_indices(mock_get: Any) -> None:
     assert stock_indices(file_path) == expected
     # Удаление временного файла
     os.remove(file_path)
+
+def test_stock_indices_file_not_found() -> None:
+    # Убедитесь, что файла не существует
+    filename = 'non_existent_file.txt'
+    with pytest.raises(FileNotFoundError):
+        # попытка открыть файл
+        open(filename, 'r')
+
+
+def test_stock_indices_file_not_found_logging(caplog) -> None:
+    stock_indices('non_existent_file.json')
+    assert "Не задан путь к исходным данным" in caplog.text
+
+
+def test_stock_indices_api_key_not_found() -> None:
+    os.environ['APIKEY_TWELVEDATA_STOCK'] = ''
+    result = stock_indices()
+    assert result == []

@@ -169,7 +169,7 @@ def request_currency(filename: str = 'user_settings.json') -> list[dict]:
     return currency_rates
 
 
-def stock_indices(filename: str) -> list[dict]:
+def stock_indices(filename: str = 'user_settings.json') -> list[dict]:
     """Запрашивает на API-сервисе курсы акций, заданных пользователем, и возвращает результат запроса
     """
     utils_logger.info('Получение данных из исходного файла')
