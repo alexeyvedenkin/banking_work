@@ -1,13 +1,11 @@
 import logging
-import pytest
 from typing import Any
-import os
+
 from src.services import find_people_pass
 
 
-def test_find_people_pass(test_transactions) -> None:
+def test_find_people_pass(test_transactions: Any) -> None:
     # Mock the logger
-    import logging
     logging.disable(logging.CRITICAL)
 
     # Call the function
@@ -17,12 +15,12 @@ def test_find_people_pass(test_transactions) -> None:
     expected_result = [
         {'Категория': 'Переводы', 'Описание': 'Иванов И.'},
         {'Категория': 'Переводы', 'Описание': 'Петров П.'},
-        ]
+    ]
     assert result == expected_result
 
-def test_find_people_pass_empty_transactions():
+
+def test_find_people_pass_empty_transactions() -> None:
     # Mock the logger
-    import logging
     logging.disable(logging.CRITICAL)
 
     # Call the function
@@ -31,9 +29,9 @@ def test_find_people_pass_empty_transactions():
     # Check if the result is correct
     assert len(result) == 0
 
-def test_find_people_pass_no_persons():
+
+def test_find_people_pass_no_persons() -> None:
     # Mock the logger
-    import logging
     logging.disable(logging.CRITICAL)
 
     # Define test data

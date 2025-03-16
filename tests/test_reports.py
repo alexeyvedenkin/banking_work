@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+
 from src.reports import spending_by_weekday
 
 
@@ -32,6 +33,7 @@ def test_spending_by_weekday_empty() -> None:
     # Проверка результата
     assert isinstance(result, pd.Series)
     assert len(result) == 7  # 7 дней недели
+
 
 def test_spending_by_weekday_invalid_date() -> None:
     # Создаем тестовый датафрейм

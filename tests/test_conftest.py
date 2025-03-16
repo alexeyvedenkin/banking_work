@@ -1,8 +1,9 @@
 import json
 import os
-import pandas as pd
 from datetime import datetime
 from typing import Any
+
+import pandas as pd
 
 
 def test_test_date(test_date: datetime) -> None:
@@ -56,7 +57,7 @@ def test_test_json_file(test_json_file: Any) -> None:
     assert test_json_file.exists()
 
 
-def test_df_fixture(df):
+def test_df_fixture(df: Any) -> None:
     # Проверка того, что фикстура возвращает DataFrame
     assert isinstance(df, pd.DataFrame)
 
@@ -67,7 +68,7 @@ def test_df_fixture(df):
     assert df['date'].tolist() == ['2022-01-01', '2022-01-02', '2022-01-03']
 
 
-def test_user_settings_path(user_settings_path):
+def test_user_settings_path(user_settings_path: Any) -> None:
     # Проверка существования файла
     assert os.path.exists(user_settings_path)
 

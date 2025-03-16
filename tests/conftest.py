@@ -1,8 +1,8 @@
 import json
-from datetime import datetime
-from typing import Any
-
 import os
+from datetime import datetime
+from typing import Any, Generator
+
 import pandas as pd
 import pytest
 
@@ -59,21 +59,21 @@ def test_json_file(tmp_path: Any) -> Any:
 
 @pytest.fixture
 def test_transactions() -> Any:
-    return[
+    return [
         {'Категория': 'Переводы', 'Описание': 'Иванов И.'},
         {'Категория': 'Зарплата', 'Описание': 'Зарплата за март'},
         {'Категория': 'Переводы', 'Описание': 'Петров П.'}
-        ]
+    ]
 
 
 @pytest.fixture
-def df():
+def df() -> Any:
     data = {'transaction': [1, 2, 3], 'date': ['2022-01-01', '2022-01-02', '2022-01-03']}
     return pd.DataFrame(data)
 
 
 @pytest.fixture
-def user_settings_path():
+def user_settings_path() -> Generator:
     # Создание тестового файла user_settings.json
     path = 'test_user_settings.json'
     with open(path, 'w') as file:
@@ -84,7 +84,7 @@ def user_settings_path():
 
 
 @pytest.fixture
-def test_data():
+def test_data() -> Any:
     data = {
         'Дата операции': ['01.01.2022', '02.01.2022', '03.01.2022'],
         'Сумма операции': [-100, 200, -50],

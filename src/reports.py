@@ -7,7 +7,7 @@ from typing import Any, Optional
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
-from config import DATA_DIR, LOGS_DIR
+from config import LOGS_DIR
 from src.decorator import to_json_file
 from src.utils import days_translation
 
