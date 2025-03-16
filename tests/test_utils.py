@@ -1,14 +1,13 @@
-from datetime import datetime
-from unittest.mock import Mock, patch
-from typing import Any
-import unittest
-import os
 import json
-
+import os
 import pytest
+import unittest
+from datetime import datetime
+from typing import Any
+from unittest.mock import patch
 
 from config import DATA_DIR
-from src.utils import (days_translation, get_start_for_period, request_currency, stock_indices)
+from src.utils import days_translation, get_start_for_period, request_currency, stock_indices
 
 
 def test_days_translation():
@@ -28,46 +27,20 @@ def test_days_translation():
         assert value, "Найдено пустое значение в словаре"
 
 
-# def test_get_start_of_week(test_date) -> None:
-#     expected = datetime(2021, 3, 29, 0, 0, 0)
-#     assert get_start_of_week(test_date) == expected
-#
-#
-# def test_get_start_of_week_type_error(test_date) -> None:
-#     with pytest.raises(TypeError):
-#         get_start_of_week(datetime('2011-11-11'))
-#
-#
-# def test_get_start_of_month(test_date):
-#     expected = datetime(2021, 3, 1, 0, 0, 0)
-#     assert get_start_of_month(test_date) == expected
-#
-#
-# def test_get_start_of_year(test_date) -> None:
-#     expected = datetime(2021, 1, 1, 0, 0, 0)
-#     assert get_start_of_year(test_date) == expected
-#
-#
-# def test_get_start_without_period(test_date) -> None:
-#     test_date = datetime(1971,1,1)
-#     expected = datetime(1971, 1, 1)
-#     assert get_start_without_period(test_date) == expected
+@pytest.mark.parametrize("work_date, type_of_period, expected_start", [
+    ("15.02.2025 10:00:00", 'W', "10.02.2025 00:00:00"),
+    ("15.02.2025 10:00:00", 'M', "01.02.2025 00:00:00"),
+    ("15.02.2025 10:00:00", 'Y', "01.01.2025 00:00:00"),
+    ("15.02.2025 10:00:00", 'ALL', "01.01.1971 00:00:00"),
+])
+def test_get_start_for_period(work_date, type_of_period, expected_start):
+    start = get_start_for_period(work_date, type_of_period)
+    expected_start_datetime = datetime.strptime(expected_start, "%d.%m.%Y %H:%M:%S")
+    assert start == expected_start_datetime
 
-
-def test_get_start_for_period(test_date_str, type_of_period='M') -> None:
-    test_date = datetime.strptime(test_date_str, "%d.%m.%Y %H:%M:%S")
-    if type_of_period == 'M':
-        expected = datetime(2021, 3, 1, 0, 0, 0)
-        assert get_start_for_period(test_date_str, 'M') == expected
-    elif type_of_period == 'W':
-        expected = datetime(2021, 3, 29, 0, 0, 0)
-        assert get_start_for_period(test_date_str, 'W') == expected
-    elif type_of_period == 'Y':
-        expected = datetime(2021, 1, 1, 0, 0, 0)
-        assert get_start_for_period(test_date_str, 'Y') == expected
-    elif type_of_period == 'ALL':
-        expected = datetime(1971, 1, 1, 0, 0, 0)
-        assert get_start_for_period(test_date_str, 'ALL') == expected
+def test_get_start_for_period_invalid_type_of_period():
+    with pytest.raises(ValueError):
+        get_start_for_period("15.09.2024 10:00:00", 'Некорректный тип периода')
 
 
 # @patch('datetime.datetime')
