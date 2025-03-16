@@ -87,6 +87,7 @@ def test_request_currency_file_not_found() -> None:
 
 
 def test_request_currency_file_not_found_logging(caplog: Any) -> None:
+    caplog.set_level("DEBUG")
     request_currency('non_existent_file.json')
     assert "Не задан путь к исходным данным" in caplog.text
 
@@ -142,6 +143,7 @@ def test_stock_indices_file_not_found() -> None:
 
 
 def test_stock_indices_file_not_found_logging(caplog: Any) -> None:
+    caplog.set_level("DEBUG")
     stock_indices('non_existent_file.json')
     assert "Не задан путь к исходным данным" in caplog.text
 

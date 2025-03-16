@@ -53,3 +53,12 @@ def test_json_file(tmp_path: Any) -> Any:
     with open(file_path, 'w', encoding='utf-8') as file:
         json.dump(data, file)
     return file_path
+
+
+@pytest.fixture
+def test_transactions() -> Any:
+    return[
+        {'Категория': 'Переводы', 'Описание': 'Иванов И.'},
+        {'Категория': 'Зарплата', 'Описание': 'Зарплата за март'},
+        {'Категория': 'Переводы', 'Описание': 'Петров П.'}
+        ]
