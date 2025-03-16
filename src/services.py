@@ -31,15 +31,3 @@ def find_people_pass(transactions: list[dict]) -> list[dict]:
         json.dump(result_list, json_file, indent=4, ensure_ascii=False)
 
     return result_list
-
-
-# if __name__ == '__main__':
-#     operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
-#     df = pd.read_excel(operations_path)
-#     transactions = df.to_dict(orient="records")
-#     result = find_people_pass(transactions)
-#     print(*result[:5], sep='\n')
-#     print(len(result))
-#     people_pass_path = os.path.join(RESULT_DIR, 'people_pass.json')
-#     with open(people_pass_path, 'w', encoding='utf-8') as json_file:
-#         json.dump(result, json_file, indent=4, ensure_ascii=False)

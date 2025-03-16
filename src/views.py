@@ -2,14 +2,13 @@ import datetime
 import json
 import logging
 import os
-from pandas import DataFrame
-from typing import Dict
+from typing import Any, Dict
 
 import pandas as pd
+from pandas import DataFrame
 
 from config import DATA_DIR, LOGS_DIR, RESULT_DIR
 from src import utils
-from typing import Any
 
 logger = logging.getLogger("views")
 logger.setLevel(logging.DEBUG)
@@ -24,23 +23,6 @@ operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
 logger.info("Задан путь для чтения файла с данными")
 df = pd.read_excel(operations_path)
 logger.info("Данные из файла .xslx преобразованы в DataFrame")
-# # Загрузка переменных окружения из .env файла
-# load_dotenv()
-#
-# # Получение значения переменной API_KEY из .env-файла
-# # apikey = os.getenv('APIKEY_FINNHUB')
-
-
-# def main_page():
-#     """Возвращает JSON-ответ по настройкам
-#     """
-#     pass
-#
-#
-# def events_page():
-#     """Возвращает JSON-ответ по настройкам
-#     """
-#     pass
 
 
 def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: str = 'M') -> Dict:
@@ -48,6 +30,7 @@ def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: s
     """
     total_result = {}
     expenses_dict = {}
+
     # Определяем период для обработки исходя из заданной даты
     start = utils.get_start_for_period(work_date, type_of_period)
     work_date = datetime.datetime.strptime(work_date, "%d.%m.%Y %H:%M:%S")
@@ -68,22 +51,12 @@ def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: s
     print(f'Общая сумма платежей за период выборки: {total_payments} руб.')
     print()
 
-    # Формируем словарь словарей для выгрузки в JSON-файл
-    # total_result = {'expenses': {'total_amount': total_payments}}
-    # print(total_result)
-    # print()
-
     # Группируем датафрейм по категориям
     grouped_by_categories_spending = filtered_df_for_spending.groupby('Категория', observed=False)
 
     # Определяем сумму расходов по категориям в заданном периоде, округляем сумму до целого числа
     result_spending = (
         grouped_by_categories_spending['Сумма операции'].apply(lambda x: x[x < 0].abs().sum().astype(int)))
-    # print(result_spending, type(result_spending))
-    # print()
-
-    # transfers_and_cash = result_spending[result_spending.loc in ['Переводы', 'Наличные']]
-    # print(transfers_and_cash)
 
     # Сумма по категории "Переводы":
     total_transfers = int(result_spending['Переводы']) if 'Переводы' in result_spending.index else 0
@@ -145,8 +118,6 @@ def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: s
     print(sorted_result_incomes)
     print()
 
-    # sorted_result_incomes_df = sorted_result_incomes.reset_index()
-
     # Формируем словарь словарей для выгрузки в JSON-файл
     main_income: Any = {}
     main_income['total_amount'] = total_incomes
@@ -156,11 +127,6 @@ def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: s
         incomes_result.append({'category': category, 'amount': amount})
 
     main_income['main'] = incomes_result
-    # print(main_income, type(main_income))
-
-    # main_incomes = sorted_result_incomes_df.set_index('index').to_dict(orient='index')
-    # print(main_incomes)
-    # print()
 
     # Формируем сводный словарь словарей для выгрузки в JSON-файл
     expenses_dict['total_amount'] = total_payments
@@ -169,7 +135,7 @@ def transactions_by_period(df: DataFrame, work_date: datetime, type_of_period: s
     total_result['expenses'] = expenses_dict
     total_result['income'] = main_income
 
-    return total_result  # result_incomes
+    return total_result
 
 
 def complete_result(df: DataFrame, work_date: str, type_of_period: str = 'M') -> Any:
@@ -184,63 +150,3 @@ def complete_result(df: DataFrame, work_date: str, type_of_period: str = 'M') ->
         json.dump(final_result, file, indent=4, ensure_ascii=False)
 
     return final_result
-
-# # Создание заголовка с токеном доступа API
-# headers = {"apikey": f"{apikey}"}
-
-
-# def read_currency_and_stocks(path: str) -> Any:
-#     """Получает данные о курсах валют с API-ресурса и возвращает в формате dict{dict}
-#     """
-#     if not os.path.exists(path):
-#         logger.error('Не задан путь к исходным данным')
-#         return []
-#     with open(path, encoding="utf-8") as file_json:
-#         logger.info('Получение данных из исходного файла')
-#         data_json = json.load(file_json)
-#         logger.info('Полученные данные преобразованы в объект Python')
-#         # print(*data_json, end='\n')
-#     return data_json
-    # if "operationAmount" not in transaction:
-    #     print("Ошибка: ключ 'operationAmount' отсутствует в транзакции")
-    #     return 0.0
-    #
-    # amount = float(transaction["operationAmount"]["amount"])  # получение суммы траты
-
-    # parsed_data = json.loads(data.user_settings.json)
-    # currency = [x for x in data.user_settings.json["user_currencies": ["USD", "EUR"]]  # получение валюты
-    #
-    # if currency != "RUB":
-    #     apikey = os.getenv("API_KEY")
-    #
-    #     if not apikey:
-    #         print("Ошибка: API ключ не найден. Убедитесь, что он задан в .env файле.")
-    #         return 0.0
-    #
-    #     # url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from{currency}&amount={amount}"
-    #
-    #     headers = {"apikey": f"{apikey}"}
-    #
-    #     response = requests.get(url, headers=headers)
-    #     response_data = response.json()
-    #
-    #     # Отладочная информация
-    #     print(f"Запрос: {url}")
-    #     print(f"Статус ответа: {response.status_code}")
-    #     print(f"Ответ: {response_data}")
-    #
-    #     try:
-    #         return round(response_data["result"], 2)
-    #     except KeyError:
-    #         print("Ошибка: ключ 'result' отсутствует в ответе API")
-    #         return 0.0
-    #
-    # # return amount
-
-
-# if __name__ == '__main__':
-    # print(utils.greeting())
-    # operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
-    # df = pd.read_excel(operations_path)
-    # # print(transactions_by_period(df, '31.12.2021 23:59:59', 'Y'))
-    # print(*complete_result(), sep='\n')

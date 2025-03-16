@@ -12,7 +12,7 @@ def test_test_date(test_date: datetime) -> None:
 
 
 def test_test_date_str(test_date_str: str) -> None:
-    # Test that the fixture returns the expected value
+    # Проверяем, что фикстура возвращает заданное значение
     assert test_date_str == '31.03.2021 23:59:59'
 
 
@@ -49,5 +49,6 @@ def test_test_json_file(test_json_file: Any) -> None:
 
     # Проверяем, что данные верны
     assert loaded_data == {'user_currencies': ['USD', 'EUR']}
+
     # Проверяем, что файл существует
     assert test_json_file.exists()

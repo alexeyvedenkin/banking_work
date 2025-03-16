@@ -3,6 +3,7 @@ import logging
 import os
 from datetime import timedelta
 from typing import Any, Optional
+
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
@@ -60,12 +61,5 @@ def spending_by_weekday(transactions: pd.DataFrame,
 
     # Определяем сумму расходов по дням недели в заданном периоде
     spend_by_weekday = pays_by_weekday['Сумма операции'].apply(lambda x: x[x < 0].abs().sum())
-    # spend_by_weekday_dict = spend_by_weekday.to_dict
 
     return spend_by_weekday
-
-
-if __name__ == '__main__':
-    operations_path = os.path.join(DATA_DIR, 'operations.xlsx')
-    df = pd.read_excel(operations_path)
-    print(spending_by_weekday(df, '31.03.2021 23:59:59'))

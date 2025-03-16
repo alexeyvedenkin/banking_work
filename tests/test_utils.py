@@ -78,7 +78,7 @@ def test_request_currency(mock_get: Any) -> None:
     os.remove(file_path)
 
 
-def test_request_currency_file_not_found():
+def test_request_currency_file_not_found() -> None:
     # Убедитесь, что файла не существует
     filename = 'non_existent_file.txt'
     with pytest.raises(FileNotFoundError):
@@ -86,7 +86,7 @@ def test_request_currency_file_not_found():
         open(filename, 'r')
 
 
-def test_request_currency_file_not_found_logging(caplog):
+def test_request_currency_file_not_found_logging(caplog: Any) -> None:
     request_currency('non_existent_file.json')
     assert "Не задан путь к исходным данным" in caplog.text
 
@@ -97,7 +97,7 @@ def test_request_currency_api_key_not_found() -> None:
     assert result == []
 
 
-def test_request_currency_http_error():
+def test_request_currency_http_error() -> None:
     os.environ['APIKEY_EXCHANGERATE'] = 'test_api_key'
     with patch('requests.get') as mock_get:
         mock_response = MagicMock()
@@ -141,7 +141,7 @@ def test_stock_indices_file_not_found() -> None:
         open(filename, 'r')
 
 
-def test_stock_indices_file_not_found_logging(caplog) -> None:
+def test_stock_indices_file_not_found_logging(caplog: Any) -> None:
     stock_indices('non_existent_file.json')
     assert "Не задан путь к исходным данным" in caplog.text
 
@@ -152,7 +152,7 @@ def test_stock_indices_api_key_not_found() -> None:
     assert result == []
 
 
-def test_stock_indices_http_error():
+def test_stock_indices_http_error() -> None:
     os.environ['APIKEY_TWELVEDATA_STOCK'] = 'test_api_key'
     with patch('requests.get') as mock_get:
         mock_response = MagicMock()
