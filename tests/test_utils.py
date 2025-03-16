@@ -6,7 +6,7 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from requests import HTTPError
+from requests.exceptions import HTTPError
 
 from config import DATA_DIR
 from src.utils import days_translation, get_start_for_period, request_currency, stock_indices
@@ -97,14 +97,14 @@ def test_request_currency_api_key_not_found() -> None:
     assert result == []
 
 
-# def test_request_currency_http_error():
-#     os.environ['APIKEY_EXCHANGERATE'] = 'test_api_key'
-#     with patch('requests.get') as mock_get:
-#         mock_response = MagicMock()
-#         mock_response.raise_for_status.side_effect = Exception('HTTPError')
-#         mock_get.return_value = mock_response
-#         result = request_currency()
-#         assert result == []
+def test_request_currency_http_error():
+    os.environ['APIKEY_EXCHANGERATE'] = 'test_api_key'
+    with patch('requests.get') as mock_get:
+        mock_response = MagicMock()
+        mock_response.raise_for_status.side_effect = HTTPError('HTTP Error')
+        mock_get.return_value = mock_response
+        result = request_currency()
+        assert result == []
 
 
 @patch('requests.get')
@@ -132,6 +132,7 @@ def test_stock_indices(mock_get: Any) -> None:
     # Удаление временного файла
     os.remove(file_path)
 
+
 def test_stock_indices_file_not_found() -> None:
     # Убедитесь, что файла не существует
     filename = 'non_existent_file.txt'
@@ -149,3 +150,13 @@ def test_stock_indices_api_key_not_found() -> None:
     os.environ['APIKEY_TWELVEDATA_STOCK'] = ''
     result = stock_indices()
     assert result == []
+
+
+def test_stock_indices_http_error():
+    os.environ['APIKEY_TWELVEDATA_STOCK'] = 'test_api_key'
+    with patch('requests.get') as mock_get:
+        mock_response = MagicMock()
+        mock_response.raise_for_status.side_effect = HTTPError('HTTP Error')
+        mock_get.return_value = mock_response
+        result = stock_indices()
+        assert result == []
