@@ -4,6 +4,7 @@ import os
 import re
 
 from config import LOGS_DIR, RESULT_DIR
+from src.utils import process_nan
 
 logger = logging.getLogger("services")
 logger.setLevel(logging.DEBUG)
@@ -24,8 +25,10 @@ def find_people_pass(transactions: list[dict]) -> list[dict]:
     for transaction in transactions:
         if transaction.get('Категория') == 'Переводы' and re.search(pattern, transaction.get('Описание')):
             logger.debug("Найден перевод")
-            result_list.append(transaction)
+            # Обработка NaN перед добавлением в результат
+            result_list.append(process_nan(transaction))
     print(*result_list[:5], sep='\n')
+
     people_pass_path = os.path.join(RESULT_DIR, 'people_pass.json')
     with open(people_pass_path, 'w', encoding='utf-8') as json_file:
         json.dump(result_list, json_file, indent=4, ensure_ascii=False)

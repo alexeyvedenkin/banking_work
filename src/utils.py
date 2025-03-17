@@ -1,7 +1,7 @@
-# import datetime
 import json
 import logging
 import os
+import numpy as np
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -141,3 +141,14 @@ def stock_indices(filename: str = 'user_settings.json') -> list[dict]:
             stock_prices.append(stock_price)
 
     return stock_prices
+
+
+def process_nan(data: dict) -> dict:
+    """Обработка NaN перед сериализацией в JSON"""
+    processed_data = {}
+    for key, value in data.items():
+        if value == "" or (isinstance(value, float) and value != value):
+            processed_data[key] = None
+        else:
+            processed_data[key] = value
+    return processed_data
