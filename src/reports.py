@@ -62,4 +62,13 @@ def spending_by_weekday(transactions: pd.DataFrame,
     # Определяем сумму расходов по дням недели в заданном периоде
     spend_by_weekday = pays_by_weekday['Сумма операции'].apply(lambda x: x[x < 0].abs().sum())
 
-    return spend_by_weekday
+    # Определяем сумму расходов по дням недели в заданном периоде
+    spend_by_weekday = pays_by_weekday['Сумма операции'].apply(lambda x: x[x < 0].abs().sum())
+
+    # Рассчитываем количество недель
+    num_weeks = (work_date - start_of_period).days // 7 + 1
+
+    # Рассчитываем средние траты по дням недели
+    avg_spend_by_weekday = round(spend_by_weekday / num_weeks, 2)
+
+    return avg_spend_by_weekday
